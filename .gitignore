@@ -43,3 +43,7 @@ dist-ssr
 # OS
 .DS_Store
 Thumbs.db
+
+# Documentation & Info
+figma_info.md
+logo.md
