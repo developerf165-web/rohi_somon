@@ -45,5 +45,5 @@ dist-ssr
 Thumbs.db
 
 # Documentation & Info
-figma_info.md
-logo.md
+*.md
+!README.md

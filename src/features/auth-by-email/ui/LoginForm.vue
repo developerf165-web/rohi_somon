@@ -69,6 +69,7 @@ const onSubmit = handleSubmit(async (values) => {
   try {
     const response = await authApi.login(values.email, values.password);
     
+    
     // Remember Me logic
     if (values.rememberMe) {
       localStorage.setItem(REMEMBER_ME_KEY, values.email);
@@ -80,8 +81,8 @@ const onSubmit = handleSubmit(async (values) => {
     userStore.setAuth(response.user, response.token);
     
     // Success redirect
-    router.push('/');
-  } catch (error) {
+    await router.push('/');
+  } catch (error: any) {
     const appError = handleApiError(error);
     serverError.value = appError.message;
   } finally {

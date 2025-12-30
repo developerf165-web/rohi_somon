@@ -13,11 +13,22 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppButton: typeof import('./../ui/button/AppButton.vue')['default']
     AppCheckbox: typeof import('./../ui/checkbox/AppCheckbox.vue')['default']
+    AppFileUpload: typeof import('./../ui/file-upload/AppFileUpload.vue')['default']
     AppInput: typeof import('./../ui/input/AppInput.vue')['default']
+    AppModal: typeof import('./../ui/modal/AppModal.vue')['default']
+    AppTextarea: typeof import('./../ui/textarea/AppTextarea.vue')['default']
     BrandLogo: typeof import('./../ui/branding/BrandLogo.vue')['default']
+    Header: typeof import('./../../widgets/Header/ui/Header.vue')['default']
+    HeaderActions: typeof import('./../../widgets/Header/ui/HeaderActions.vue')['default']
+    HeaderSearchBar: typeof import('./../../widgets/Header/ui/HeaderSearchBar.vue')['default']
     LoginForm: typeof import('./../../features/auth-by-email/ui/LoginForm.vue')['default']
+    MapPickerModal: typeof import('./../../features/create-point/ui/MapPickerModal.vue')['default']
+    PointForm: typeof import('./../../features/create-point/ui/PointForm.vue')['default']
+    PointGrid: typeof import('./../../widgets/PointGrid/ui/PointGrid.vue')['default']
+    PointsHeader: typeof import('./../../widgets/PointsHeader/ui/PointsHeader.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Sidebar: typeof import('./../../widgets/Sidebar/ui/Sidebar.vue')['default']
     ThemeToggle: typeof import('./../ui/ThemeToggle/ThemeToggle.vue')['default']
   }
 }

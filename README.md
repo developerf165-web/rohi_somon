@@ -1,5 +1,48 @@
-# Vue 3 + TypeScript + Vite
+# Rohi Somon Dashboard
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A modern, responsive administrative dashboard for managing gas station points, built with Vue 3, Pinia, and Tailwind CSS.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## 🚀 Features
+
+- **Points Management**: View, add, and manage gas station points.
+- **Interactive Map Picker**: Visual coordinate selection using Leaflet.
+- **Form Validation**: Robust validation using Zod and VeeValidate.
+- **Modern UI**: Consistent 6px border-radius, professional color palette, and responsive grid layouts.
+- **Architecture**: Follows Feature-Sliced Design (FSD) for professional-grade maintainability.
+
+## 🛠 Tech Stack
+
+- **Vue 3** (Composition API)
+- **Pinia** (State Management)
+- **Tailwind CSS 4**
+- **TypeScript**
+- **Leaflet** (Maps)
+- **Vite** (Build Tool)
+
+## 📦 Getting Started
+
+1. **Install dependencies**:
+
+   ```bash
+   npm install
+   ```
+
+2. **Run in development mode**:
+
+   ```bash
+   npm run dev
+   ```
+
+3. **Build for production**:
+   ```bash
+   npm run build
+   ```
+
+## 📂 Project Structure
+
+- `src/app`: Global app setup (styles, router, main entry).
+- `src/pages`: Main page components.
+- `src/widgets`: Composite UI blocks.
+- `src/features`: Interactive business logic.
+- `src/entities`: Business domain models and stores.
+- `src/shared`: Reusable UI components, API clients, and utils.

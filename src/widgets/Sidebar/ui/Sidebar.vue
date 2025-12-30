@@ -1,0 +1,90 @@
+<script setup lang="ts">
+import { IconPoints, IconSettings, IconLogout } from '@/shared/assets/icons';
+import { useRouter, useRoute } from 'vue-router';
+
+const router = useRouter();
+const route = useRoute();
+
+const menuItems = [
+  { id: 'points', label: 'Точки', icon: IconPoints, path: '/' },
+];
+
+const bottomItems = [
+  { id: 'settings', label: 'Настройка', icon: IconSettings, path: '/settings' },
+  { id: 'logout', label: 'Выход', icon: IconLogout, path: '/login', isLogout: true },
+];
+
+const navigate = (path: string, isLogout?: boolean) => {
+  if (isLogout) {
+    // Handle logout logic if needed
+  }
+  router.push(path);
+};
+
+const isActive = (path: string) => route.path === path;
+</script>
+
+<template>
+  <aside 
+    class="w-[210px] h-[calc(100vh-70px)] bg-[#F8FAFC] border-r border-[#C6D6E8] flex flex-col justify-between py-[30px]"
+  >
+    <!-- Top Menu -->
+    <nav class="flex flex-col gap-2">
+      <button
+        v-for="item in menuItems"
+        :key="item.id"
+        class="flex items-center gap-[10px] px-[30px] py-3 transition-all duration-200 group"
+        :class="[
+          isActive(item.path) 
+            ? 'bg-[#E0F0FF] text-[#127EEE]' 
+            : 'text-[#3F5575] hover:bg-[#F1F5F9]'
+        ]"
+        @click="navigate(item.path)"
+      >
+        <component 
+          :is="item.icon" 
+          class="w-[17px] h-[17px] transition-colors"
+          :class="isActive(item.path) ? 'text-[#127EEE]' : 'text-[#3F5575] group-hover:text-[#1B3E69]'"
+        />
+        <span class="text-[13px] font-medium leading-[21px]">
+          {{ item.label }}
+        </span>
+      </button>
+    </nav>
+
+    <!-- Bottom Menu -->
+    <nav class="flex flex-col gap-2">
+      <button
+        v-for="item in bottomItems"
+        :key="item.id"
+        class="flex items-center gap-[10px] px-[30px] py-3 transition-all duration-200 group"
+        :class="[
+          isActive(item.path) 
+            ? 'bg-[#E0F0FF] text-[#127EEE]' 
+            : 'text-[#3F5575] hover:bg-[#F1F5F9]'
+        ]"
+        @click="navigate(item.path, item.isLogout)"
+      >
+        <component 
+          :is="item.icon" 
+          class="w-[17px] h-[17px] transition-colors"
+          :class="isActive(item.path) ? 'text-[#127EEE]' : 'text-[#3F5575] group-hover:text-[#1B3E69]'"
+        />
+        <span class="text-[13px] font-medium leading-[21px]">
+          {{ item.label }}
+        </span>
+      </button>
+    </nav>
+  </aside>
+</template>
+
+<style scoped>
+/* Custom subtle scrollbar if needed */
+aside::-webkit-scrollbar {
+  width: 4px;
+}
+aside::-webkit-scrollbar-thumb {
+  background: #C6D6E8;
+  border-radius: 10px;
+}
+</style>

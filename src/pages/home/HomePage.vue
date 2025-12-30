@@ -1,25 +1,57 @@
 <script setup lang="ts">
-import { AppButton } from '@/shared/ui/button';
+import { ref, onMounted } from 'vue';
+import DashboardLayout from '@/app/layouts/DashboardLayout.vue';
+import { PointsHeader } from '@/widgets/PointsHeader';
+import { PointGrid } from '@/widgets/PointGrid';
 import { useRouter } from 'vue-router';
+import { usePointStore } from '@/entities/Point';
 
+const search = ref('');
+const pointStore = usePointStore();
 const router = useRouter();
 
-const goToLogin = () => {
-  router.push('/login');
+onMounted(() => {
+  pointStore.fetchPoints();
+});
+
+const onAdd = () => {
+  router.push('/points/add');
 };
+
+const onView = (_id: number | string) => {};
+const onEdit = (_id: number | string) => {};
+const onDelete = (id: number | string) => {
+  if (confirm('Are you sure you want to delete this point?')) {
+    pointStore.removePoint(id);
+  }
+};
+const onMap = (_id: number | string) => {};
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col items-center justify-center bg-[#0B1E33] text-white p-6">
-    <h1 class="text-4xl font-bold mb-4">Rohi Somon</h1>
-    <p class="text-xl text-blue-200 mb-8 max-w-md text-center">
-      Добро пожаловать в систему Rohi Somon. Пожалуйста, авторизуйтесь для доступа к функциям.
-    </p>
-    
-    <div class="flex gap-4">
-      <AppButton @click="goToLogin" size="lg">
-        Войти в систему
-      </AppButton>
+  <DashboardLayout>
+    <div class="flex flex-col gap-10">
+      <PointsHeader 
+        v-model:searchModel="search" 
+        @add="onAdd" 
+      />
+      
+      <div v-if="pointStore.isLoading" class="flex justify-center py-20">
+        <div class="animate-spinner w-10 h-10"></div>
+      </div>
+
+      <div v-else-if="pointStore.error" class="bg-red-50 text-red-600 p-4 rounded-lg">
+        {{ pointStore.error }}
+      </div>
+      
+      <PointGrid 
+        v-else
+        :points="pointStore.points"
+        @view="onView"
+        @edit="onEdit"
+        @delete="onDelete"
+        @map="onMap"
+      />
     </div>
-  </div>
+  </DashboardLayout>
 </template>

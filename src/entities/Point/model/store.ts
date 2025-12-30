@@ -1,0 +1,73 @@
+import { defineStore } from 'pinia';
+import { pointsApi } from '@/shared/api/points';
+import type { Point, PointState } from './types';
+
+export const usePointStore = defineStore('point', {
+  state: (): PointState => ({
+    points: [],
+    isLoading: false,
+    error: null,
+    createForm: {
+      title: '',
+      address: '',
+      lat: '',
+      lng: '',
+      comment: '',
+    }
+  }),
+
+  actions: {
+    async fetchPoints() {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const data = await pointsApi.fetchPoints();
+        this.points = data;
+      } catch (err: any) {
+        this.error = err.message || 'Failed to fetch points';
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async createPoint() {
+      this.isLoading = true;
+      try {
+        const newPoint = await pointsApi.createPoint(this.createForm);
+        this.points.push(newPoint);
+        this.resetForm();
+        return true;
+      } catch (err: any) {
+        this.error = err.message || 'Failed to create point';
+        return false;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    resetForm() {
+      this.createForm = {
+        title: '',
+        address: '',
+        lat: '',
+        lng: '',
+        comment: '',
+      };
+    },
+
+    addPoint(point: Point) {
+      this.points.push(point);
+    },
+
+    removePoint(id: number | string) {
+      this.points = this.points.filter(p => p.id !== id);
+    },
+
+    updatePoint(updatedPoint: Point) {
+      const index = this.points.findIndex(p => p.id === updatedPoint.id);
+      if (index !== -1) {
+        this.points[index] = updatedPoint;
+      }
+    }
+  },
+});

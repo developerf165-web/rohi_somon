@@ -17,12 +17,12 @@ const props = withDefaults(defineProps<Props>(), {
   type: 'button',
 });
 
-const baseStyles = 'inline-flex items-center justify-center rounded-[4px] font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50';
+const baseStyles = 'inline-flex items-center justify-center rounded-[6px] font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50';
 
 const variants = {
-  primary: 'bg-[#1B3E69] text-white hover:opacity-90 shadow-sm active:scale-95',
-  secondary: 'bg-secondary-100 text-secondary-900 hover:bg-secondary-200 active:scale-95',
-  outline: 'border border-secondary-200 bg-transparent hover:bg-secondary-50 active:scale-95 text-secondary-700 dark:text-secondary-200 dark:border-secondary-700 dark:hover:bg-secondary-800',
+  primary: 'bg-[#1B3E69] text-white hover:opacity-90 shadow-sm active:scale-95 border border-[#1B3E69]',
+  secondary: 'bg-white text-[#1B3E69] hover:bg-slate-50 border border-[#C6D6E8] active:scale-95',
+  outline: 'border-2 border-[#1B3E69] text-[#1B3E69] hover:bg-[#1B3E69] hover:text-white',
   ghost: 'bg-transparent hover:bg-secondary-100 active:scale-95 text-secondary-700 dark:text-secondary-200 dark:hover:bg-secondary-800',
   danger: 'bg-red-600 text-white hover:bg-red-700 active:scale-95 focus-visible:ring-red-500',
 };

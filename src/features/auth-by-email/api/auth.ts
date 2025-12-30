@@ -8,14 +8,14 @@ export const authApi = {
    * Login with email and password
    * Currently simulated with a delay and mock data
    */
-  async login(email: string, password: string): Promise<LoginResponse> {
+  async login(email: string, _password: string): Promise<LoginResponse> {
     // Simulated network delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Mock successful response
     // In a real app, this would use the apiClient: 
     // const response = await apiClient.post<LoginResponse>('/auth/login', { email, password });
-    console.log('API login call with:', email, password.replace(/./g, '*'));
+    
     
     return {
       user: {

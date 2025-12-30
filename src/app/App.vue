@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import SplashPage from '@/pages/splash/SplashPage.vue'
-import ThemeToggle from '@/shared/ui/ThemeToggle/ThemeToggle.vue'
 const showSplash = ref(true)
 
 onMounted(() => {
@@ -13,8 +12,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <ThemeToggle />
-  
   <Transition name="fade">
     <SplashPage v-if="showSplash" />
   </Transition>

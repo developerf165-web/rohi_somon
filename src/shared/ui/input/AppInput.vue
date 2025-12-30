@@ -23,9 +23,23 @@ const inputId = `input-${Math.random().toString(36).slice(2, 9)}`;
 
 const inputClasses = computed(() => {
   return [
-    'flex h-9 w-full rounded-[4px] border-[1.5px] bg-[var(--app-input-bg,white)] px-3 py-2 text-sm ring-offset-white transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-secondary-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-secondary-950 dark:placeholder:text-secondary-400',
-    props.error ? 'border-red-500 text-red-500 focus-visible:ring-red-500' : 'border-[#8DA2C0] text-[#20508A] focus-visible:ring-primary-500'
+    'flex h-9 w-full rounded-[6px] border bg-[var(--app-input-bg,white)] px-3 py-2 text-sm ring-offset-white transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-secondary-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#1B3E69] disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-secondary-950 dark:placeholder:text-secondary-400',
+    props.error ? 'border-red-500 text-red-500 focus-visible:ring-red-500' : 'border-[#C6D6E8] text-[#1B3E69] focus-visible:border-[#1B3E69]'
   ].join(' ');
+});
+
+const formattedLabel = computed(() => {
+  if (!props.label) return null;
+  if (props.label.endsWith('*')) {
+    return {
+      text: props.label.slice(0, -1).trim(),
+      required: true
+    };
+  }
+  return {
+    text: props.label,
+    required: false
+  };
 });
 
 const onInput = (event: Event) => {
@@ -37,24 +51,33 @@ const onInput = (event: Event) => {
 <template>
   <div class="w-full space-y-1">
     <label 
-      v-if="label" 
+      v-if="formattedLabel" 
       :for="inputId"
-      class="text-[13px] font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-[var(--app-text)]"
+      class="text-[16px] font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-[#1B3E69]"
     >
-      {{ label }}
+      {{ formattedLabel.text }}
+      <span v-if="formattedLabel.required" class="text-red-500 ml-0.5">*</span>
     </label>
-    <div class="relative">
+    <div class="relative flex items-center">
       <input
         :id="inputId"
         :type="type"
         :value="modelValue"
         :placeholder="placeholder"
         :disabled="disabled"
-        :class="inputClasses"
+        :class="[
+          inputClasses,
+          $slots.append ? 'pr-10' : ''
+        ]"
         class="placeholder-[#8DA2C0]"
-        style="--placeholder-color: #8DA2C0"
         @input="onInput"
       />
+      <div 
+        v-if="$slots.append" 
+        class="absolute right-[1.5px] h-[calc(100%-3px)] px-3 bg-[#DFE8F5] border-l border-[#C6D6E8] rounded-r-[6px] flex items-center justify-center text-[#1B3E69]"
+      >
+        <slot name="append"></slot>
+      </div>
     </div>
     <span v-if="error" class="text-xs font-medium text-red-500">
       {{ error }}
