@@ -49,11 +49,11 @@ const onInput = (event: Event) => {
 </script>
 
 <template>
-  <div class="w-full space-y-1">
+  <div class="w-full flex flex-col" :class="label ? 'space-y-1' : ''">
     <label 
       v-if="formattedLabel" 
       :for="inputId"
-      class="text-[16px] font-bold text-[#1B3E69] leading-none"
+      class="text-[16px] font-bold text-[#1B3E69]"
     >
       {{ formattedLabel.text }}
       <span v-if="formattedLabel.required" class="text-red-500 ml-0.5">*</span>
@@ -61,11 +61,12 @@ const onInput = (event: Event) => {
     <textarea
       :id="inputId"
       :value="modelValue"
+      @input="onInput"
       :placeholder="placeholder"
       :disabled="disabled"
       :rows="rows"
       :class="classes"
-      @input="onInput"
+      class="flex-1"
     ></textarea>
     <span v-if="error" class="text-xs font-medium text-red-500">
       {{ error }}

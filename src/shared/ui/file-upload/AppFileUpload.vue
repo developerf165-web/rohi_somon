@@ -1,32 +1,33 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { Image as ImageIcon, X } from 'lucide-vue-next';
+import { Image as ImageIcon, FileText, X } from 'lucide-vue-next';
 
 interface Props {
+  variant?: 'default' | 'minimal';
+  type?: 'image' | 'file';
   label?: string;
+  placeholder?: string;
+  accept?: string;
   maxFiles?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  maxFiles: 5,
+  variant: 'default',
+  type: 'image',
+  maxFiles: 1,
 });
 
-const formattedLabel = computed(() => {
-  if (!props.label) return null;
-  if (props.label.endsWith('*')) {
-    return {
-      text: props.label.slice(0, -1).trim(),
-      required: true
-    };
-  }
-  return {
-    text: props.label,
-    required: false
-  };
-});
+const emit = defineEmits<{
+  (e: 'update:files', files: File[]): void;
+}>();
 
 const files = ref<File[]>([]);
 const previews = ref<string[]>([]);
+
+const displayPlaceholder = computed(() => {
+  if (props.placeholder) return props.placeholder;
+  return props.type === 'image' ? 'Выберите аватар' : 'CV - сотрудника';
+});
 
 const onFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -35,71 +36,122 @@ const onFileChange = (event: Event) => {
   const newFiles = Array.from(target.files);
   const remainingSlots = props.maxFiles - files.value.length;
   
+  if (remainingSlots <= 0) return;
+
   newFiles.slice(0, remainingSlots).forEach(file => {
     files.value.push(file);
-    const reader = new FileReader();
-    reader.onload = (e) => previews.value.push(e.target?.result as string);
-    reader.readAsDataURL(file);
+    if (props.type === 'image' && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => previews.value.push(e.target?.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      previews.value.push(''); // No preview for non-images
+    }
   });
+  
+  emit('update:files', files.value);
 };
 
 const removeFile = (index: number) => {
   files.value.splice(index, 1);
   previews.value.splice(index, 1);
+  emit('update:files', files.value);
 };
 </script>
 
 <template>
-  <div class="w-full space-y-2">
-    <label 
-      v-if="formattedLabel" 
-      class="text-[16px] font-bold text-[#1B3E69] leading-none"
-    >
-      {{ formattedLabel.text }}
-      <span v-if="formattedLabel.required" class="text-red-500 ml-0.5">*</span>
+  <!-- Minimal Variant (used in integrated containers like Kadr form) -->
+  <div v-if="variant === 'minimal'" class="flex flex-col items-center justify-center py-4 px-4 transition-colors cursor-pointer group relative w-full h-full">
+    <input 
+      type="file" 
+      class="absolute inset-0 opacity-0 cursor-pointer z-10" 
+      :accept="accept || (type === 'image' ? 'image/*' : '.pdf,.doc,.docx')"
+      :multiple="maxFiles > 1"
+      @change="onFileChange"
+    />
+    
+    <div v-if="files.length === 0" class="flex flex-col items-center gap-1 group-hover:scale-105 transition-transform duration-200">
+      <div class="text-[#8DA2C0] group-hover:text-[#1B3E69] transition-colors">
+        <ImageIcon v-if="type === 'image'" :size="32" stroke-width="1.5" />
+        <FileText v-else :size="32" stroke-width="1.5" />
+      </div>
+      <div class="flex flex-col items-center">
+        <span class="text-[#1B3E69] font-bold text-[14px]">
+          {{ displayPlaceholder }}
+        </span>
+        <span class="text-[#8DA2C0] text-[12px] font-medium leading-tight">
+          Файл не выбран
+        </span>
+      </div>
+    </div>
+
+    <div v-else class="flex flex-wrap gap-4 justify-center">
+      <div v-for="(file, idx) in files" :key="idx" class="relative group/item">
+        <div v-if="type === 'image' && previews[idx]" class="w-16 h-16 rounded-lg overflow-hidden border border-[#DDE2E4]">
+          <img :src="previews[idx]" class="w-full h-full object-cover" />
+        </div>
+        <div v-else class="w-20 h-20 rounded-lg bg-[#F4F7FA] border border-[#DDE2E4] flex flex-col items-center justify-center p-2 text-center">
+          <FileText class="text-[#1B3E69] mb-1" :size="24" stroke-width="1.5" />
+          <span class="text-[10px] text-[#3F5575] font-medium truncate w-full px-1">{{ file.name }}</span>
+        </div>
+        
+        <button 
+          @click.stop="removeFile(idx)"
+          class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow-sm hover:bg-red-600 transition-colors z-20"
+        >
+          <X :size="12" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Default Variant (standard card style for Points, etc) -->
+  <div v-else class="w-full flex flex-col" :class="label ? 'space-y-1' : ''">
+    <label v-if="label" class="text-[16px] font-bold text-[#1B3E69] leading-none">
+      {{ label }}
     </label>
     
-    <!-- Unified Container -->
-    <div class="w-full min-h-[140px] bg-white border border-[#C6D6E8] rounded-[6px] flex overflow-hidden">
+    <div class="bg-white border border-[#C6D6E8] rounded-[6px] flex overflow-hidden min-h-[100px] flex-1">
       <!-- Left: Upload Trigger -->
-      <label 
-        class="w-[200px] flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50/50 transition-colors shrink-0 relative py-6"
-      >
+      <label class="w-[180px] flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50/50 transition-colors shrink-0 relative py-2">
         <input 
           type="file" 
           class="hidden" 
-          accept="image/*" 
-          multiple 
+          :accept="accept || (type === 'image' ? 'image/*' : '.pdf,.doc,.docx')"
+          :multiple="maxFiles > 1"
           @change="onFileChange"
         />
-        <div class="w-[60px] h-[60px] border border-[#8DA2C0] rounded-[12px] flex items-center justify-center mb-3">
-          <ImageIcon class="w-8 h-8 text-[#8DA2C0]" />
+        <div class="w-[48px] h-[48px] border border-[#8DA2C0] rounded-[10px] flex items-center justify-center mb-2">
+          <ImageIcon v-if="type === 'image'" class="w-6 h-6 text-[#8DA2C0]" />
+          <FileText v-else class="w-6 h-6 text-[#8DA2C0]" />
         </div>
-        <span class="text-[14px] text-[#20508A] font-medium">Выберите фото</span>
+        <span class="text-[13px] text-[#20508A] font-bold">{{ displayPlaceholder }}</span>
         
-        <!-- Dashed Vertical Separator -->
-        <div class="absolute right-0 top-1/2 -translate-y-1/2 h-[75%] border-r border-dashed border-[#C6D6E8]"></div>
+        <!-- Separator -->
+        <div class="absolute right-0 top-1/2 -translate-y-1/2 h-[60%] border-r border-dashed border-[#C6D6E8]"></div>
       </label>
 
       <!-- Right: Previews/Placeholder -->
-      <div class="flex-1 p-6 flex flex-wrap gap-6 items-center justify-start min-w-0">
-        <div v-if="previews.length === 0" class="w-full text-[14px] text-[#8DA2C0] opacity-80 text-center">
-          Здесь появятся выбранные фото
+      <div class="flex-1 p-4 flex flex-wrap gap-4 items-center justify-start min-w-0 overflow-y-auto">
+        <div v-if="files.length === 0" class="w-full flex flex-col items-center gap-1 opacity-80">
+          <span class="text-[14px] text-[#1B3E69] font-bold">Файлы не выбраны</span>
+          <span class="text-[12px] text-[#8DA2C0] font-medium">Выберите файл для загрузки</span>
         </div>
         
-        <div 
-          v-for="(src, index) in previews" 
-          :key="src" 
-          class="relative w-[92px] h-[92px] shrink-0"
-        >
-          <div class="w-full h-full rounded-[6px] overflow-hidden border border-slate-200 shadow-sm">
-            <img :src="src" class="w-full h-full object-cover" />
+        <div v-for="(file, idx) in files" :key="idx" class="relative group/item">
+          <div v-if="type === 'image' && previews[idx]" class="w-[92px] h-[92px] rounded-[6px] overflow-hidden border border-[#DDE2E4]">
+            <img :src="previews[idx]" class="w-full h-full object-cover" />
           </div>
+          <div v-else class="w-[92px] h-[92px] rounded-[6px] bg-[#F4F7FA] border border-[#DDE2E4] flex flex-col items-center justify-center p-2 text-center">
+            <FileText class="text-[#1B3E69] mb-1" :size="32" stroke-width="1.5" />
+            <span class="text-[10px] text-[#3F5575] font-medium truncate w-full px-1">{{ file.name }}</span>
+          </div>
+          
           <button 
-            class="absolute -top-2 -right-2 w-5 h-5 bg-[#FF6262] text-white rounded-full flex items-center justify-center shadow-md z-10 hover:bg-red-600 transition-colors"
-            @click="removeFile(index)"
+            @click.stop="removeFile(idx)"
+            class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-sm hover:bg-red-600 transition-colors z-20"
           >
-            <X :size="12" stroke-width="3" />
+            <X :size="12" />
           </button>
         </div>
       </div>

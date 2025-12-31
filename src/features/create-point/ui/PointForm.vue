@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { AppInput } from '@/shared/ui/input';
-import { AppButton } from '@/shared/ui/button';
 import AppTextarea from '@/shared/ui/textarea/AppTextarea.vue';
 import AppFileUpload from '@/shared/ui/file-upload/AppFileUpload.vue';
+import { FormActions } from '@/shared/ui/form';
 import { MapPin } from 'lucide-vue-next';
 import { usePointForm } from '../model/usePointForm';
 import MapPickerModal from './MapPickerModal.vue';
@@ -70,37 +70,22 @@ const handleCoordsSelect = (coords: { lat: number; lng: number }) => {
 
       <!-- Files and Comments Row -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <div class="lg:col-span-8">
-          <AppFileUpload label="Файлы" />
+        <div class="lg:col-span-8 flex flex-col gap-1">
+          <label class="text-[16px] font-bold text-[#1B3E69]">Файлы</label>
+          <AppFileUpload class="h-[150px]" />
         </div>
-        <div class="lg:col-span-4">
+        <div class="lg:col-span-4 flex flex-col gap-1">
+          <label class="text-[16px] font-bold text-[#1B3E69]">Комментария</label>
           <AppTextarea
             v-model="form.comment"
-            label="Комментария"
             placeholder="Напишите что-нибудь..."
-            :rows="6"
+            class="h-[150px]"
           />
         </div>
       </div>
 
       <!-- Actions -->
-      <div class="flex justify-end gap-3 pt-4">
-        <AppButton 
-          variant="secondary" 
-          class="w-[190px] h-[46px] border-[#C6D6E8] text-[#1B3E69] bg-white hover:bg-slate-50 px-[56px] py-[12px]"
-          @click="onCancel"
-        >
-          Отмена
-        </AppButton>
-        <AppButton 
-          variant="primary" 
-          :loading="isLoading"
-          class="w-[190px] h-[46px] bg-[#1B3E69] border-[#1B3E69] px-[56px] py-[12px]"
-          @click="onSave"
-        >
-          Сохранить
-        </AppButton>
-      </div>
+      <FormActions :is-loading="isLoading" @save="onSave" @cancel="onCancel" />
     </div>
 
     <MapPickerModal

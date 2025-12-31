@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IconPoints, IconSettings, IconLogout } from '@/shared/assets/icons';
+import { IconPoints, IconSettings, IconLogout, IconKadr, IconVacation, IconSchedule } from '@/shared/assets/icons';
 import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
@@ -7,6 +7,9 @@ const route = useRoute();
 
 const menuItems = [
   { id: 'points', label: 'Точки', icon: IconPoints, path: '/' },
+  { id: 'vacations', label: 'Отпуска, отгулы', icon: IconVacation, path: '/vacations' },
+  { id: 'schedules', label: 'Расписания', icon: IconSchedule, path: '/schedules' },
+  { id: 'kadr', label: 'Сотрудники', icon: IconKadr, path: '/kadr' },
 ];
 
 const bottomItems = [
@@ -26,17 +29,17 @@ const isActive = (path: string) => route.path === path;
 
 <template>
   <aside 
-    class="w-[210px] h-[calc(100vh-70px)] bg-[#F8FAFC] border-r border-[#C6D6E8] flex flex-col justify-between py-[30px]"
+    class="w-[210px] h-full bg-[#F8FAFC] border-r border-[#C6D6E8] flex flex-col justify-between py-[30px]"
   >
     <!-- Top Menu -->
-    <nav class="flex flex-col gap-2">
+    <nav class="flex flex-col gap-2 flex-1 overflow-y-auto">
       <button
         v-for="item in menuItems"
         :key="item.id"
-        class="flex items-center gap-[10px] px-[30px] py-3 transition-all duration-200 group"
+        class="flex items-center gap-[10px] px-[30px] py-3 transition-all duration-200 group relative"
         :class="[
           isActive(item.path) 
-            ? 'bg-[#E0F0FF] text-[#127EEE]' 
+            ? 'text-[#127EEE]' 
             : 'text-[#3F5575] hover:bg-[#F1F5F9]'
         ]"
         @click="navigate(item.path)"
@@ -53,14 +56,14 @@ const isActive = (path: string) => route.path === path;
     </nav>
 
     <!-- Bottom Menu -->
-    <nav class="flex flex-col gap-2">
+    <nav class="flex flex-col gap-2 mt-auto">
       <button
         v-for="item in bottomItems"
         :key="item.id"
         class="flex items-center gap-[10px] px-[30px] py-3 transition-all duration-200 group"
         :class="[
           isActive(item.path) 
-            ? 'bg-[#E0F0FF] text-[#127EEE]' 
+            ? 'text-[#127EEE]' 
             : 'text-[#3F5575] hover:bg-[#F1F5F9]'
         ]"
         @click="navigate(item.path, item.isLogout)"

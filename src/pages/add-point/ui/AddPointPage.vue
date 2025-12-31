@@ -5,7 +5,7 @@ import { PointForm } from '@/features/create-point';
 
 <template>
   <DashboardLayout>
-    <div class="max-w-[1200px]">
+    <div class="max-w-[1200px] font-manrope">
       <PointForm />
     </div>
   </DashboardLayout>

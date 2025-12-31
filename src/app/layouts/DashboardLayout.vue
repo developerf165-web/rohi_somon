@@ -4,7 +4,7 @@ import { Sidebar } from '@/widgets/Sidebar';
 </script>
 
 <template>
-  <div class="min-h-screen bg-white flex flex-col">
+  <div class="h-screen bg-white flex flex-col overflow-hidden">
     <!-- Header -->
     <Header />
 
