@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import DashboardLayout from '@/app/layouts/DashboardLayout.vue';
-import { PointForm } from '@/features/create-point';
+import PointForm from '@/features/create-point/ui/PointForm.vue';
+
+interface Props {
+  id?: string | number;
+  mode?: 'add' | 'edit' | 'view' | 'map';
+}
+
+withDefaults(defineProps<Props>(), {
+  mode: 'add',
+});
 </script>
 
 <template>
-  <DashboardLayout>
-    <div class="max-w-[1200px] font-manrope">
-      <PointForm />
-    </div>
-  </DashboardLayout>
+  <div class="font-manrope">
+    <PointForm :id="id" :mode="mode" />
+  </div>
 </template>

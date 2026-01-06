@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import DashboardLayout from '@/app/layouts/DashboardLayout.vue';
-import { KadrHeader } from '@/widgets/KadrHeader';
 import { KadrTable } from '@/widgets/KadrTable';
 import { KadrFilterDrawer } from '@/features/KadrFilter';
 import { useKadrStore } from '@/entities/Kadr';
+import { EntityListLayout } from '@/shared/ui/layouts';
 
 const router = useRouter();
 const kadrStore = useKadrStore();
@@ -48,22 +47,21 @@ const onDelete = (id: number | string) => {
 </script>
 
 <template>
-  <DashboardLayout>
-    <div class="flex flex-col gap-8">
-      <KadrHeader 
-        v-model:searchModel="kadrStore.filters.search" 
-        @add="onAdd"
-        @filter="onFilter"
-      />
-      
-      <div v-if="kadrStore.isLoading" class="flex justify-center py-20">
-        <div class="animate-spinner w-10 h-10"></div>
-      </div>
-
-      <div v-else-if="kadrStore.error" class="bg-red-50 text-red-600 p-4 rounded-lg">
+  <EntityListLayout
+    title="Сотрудники"
+    v-model:search="kadrStore.filters.search"
+    :total-items="kadrStore.filteredEmployees.length"
+    :loading="kadrStore.isLoading"
+    :show-filter="true"
+    @add="onAdd"
+    @filter="onFilter"
+  >
+      <!-- Error Message -->
+      <div v-if="kadrStore.error" class="bg-red-50 text-red-600 p-4 rounded-lg">
         {{ kadrStore.error }}
       </div>
       
+      <!-- Table -->
       <KadrTable 
         v-else
         :employees="kadrStore.filteredEmployees"
@@ -72,13 +70,15 @@ const onDelete = (id: number | string) => {
         @delete="onDelete"
       />
 
-      <KadrFilterDrawer
-        :show="isFilterModalOpen"
-        :initial-filters="kadrStore.filters"
-        @close="isFilterModalOpen = false"
-        @apply="onApplyFilters"
-        @reset="onResetFilters"
-      />
-    </div>
-  </DashboardLayout>
+      <!-- Modals -->
+      <template #modals>
+         <KadrFilterDrawer
+            :show="isFilterModalOpen"
+            :initial-filters="kadrStore.filters"
+            @close="isFilterModalOpen = false"
+            @apply="onApplyFilters"
+            @reset="onResetFilters"
+         />
+      </template>
+  </EntityListLayout>
 </template>

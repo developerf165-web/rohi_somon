@@ -3,12 +3,12 @@ export interface Schedule {
   employeeId: number;
   fio: string; // Employee full name
   schedule: {
-    mon: boolean;
-    tue: boolean;
-    wed: boolean;
-    thu: boolean;
-    fri: boolean;
-    sat: boolean;
-    sun: boolean;
+    mon: { active: boolean; intervals: { start: string; end: string }[] };
+    tue: { active: boolean; intervals: { start: string; end: string }[] };
+    wed: { active: boolean; intervals: { start: string; end: string }[] };
+    thu: { active: boolean; intervals: { start: string; end: string }[] };
+    fri: { active: boolean; intervals: { start: string; end: string }[] };
+    sat: { active: boolean; intervals: { start: string; end: string }[] };
+    sun: { active: boolean; intervals: { start: string; end: string }[] };
   };
 }

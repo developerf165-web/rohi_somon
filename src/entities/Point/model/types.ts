@@ -3,6 +3,10 @@ export interface Point {
   title: string;
   address: string;
   image?: string;
+  lat?: string;
+  lng?: string;
+  comment?: string;
+  images?: string[];
 }
 
 export interface CreatePointDto {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Schedule } from '@/entities/Schedule';
-import SchedulesTableRow from './SchedulesTableRow.vue';
-import { AppTable } from '@/shared/ui/table';
+import { AppTable, TableActionButtons } from '@/shared/ui/table';
+import { AppCheckbox } from '@/shared/ui/checkbox';
 
 interface Props {
   schedules: Schedule[];
@@ -31,16 +31,69 @@ const headers = [
 
 <template>
   <AppTable :headers="headers" :items="schedules" :selectable="false">
-    <template #default>
-      <SchedulesTableRow 
-        v-for="(item, index) in schedules" 
-        :key="item.id" 
-        :schedule="item"
-        :index="index"
-        @view="id => emit('view', id)"
-        @edit="id => emit('edit', id)"
-        @delete="id => emit('delete', id)"
-      />
+    <template #item-index="{ item }">
+      <span class="text-[#3F5575] font-semibold text-[14px]">
+        {{ schedules.indexOf(item) + 1 }}
+      </span>
+    </template>
+
+    <template #item-fio="{ item }">
+      <span class="text-[#3F5575] font-['Manrope'] font-semibold text-[14px]">
+        {{ item.fio }}
+      </span>
+    </template>
+
+    <template #item-mon="{ item }">
+      <div class="flex justify-center">
+        <AppCheckbox :model-value="item.schedule.mon.active" readonly />
+      </div>
+    </template>
+
+    <template #item-tue="{ item }">
+      <div class="flex justify-center">
+        <AppCheckbox :model-value="item.schedule.tue.active" readonly />
+      </div>
+    </template>
+
+    <template #item-wed="{ item }">
+      <div class="flex justify-center">
+        <AppCheckbox :model-value="item.schedule.wed.active" readonly />
+      </div>
+    </template>
+
+    <template #item-thu="{ item }">
+      <div class="flex justify-center">
+        <AppCheckbox :model-value="item.schedule.thu.active" readonly />
+      </div>
+    </template>
+
+    <template #item-fri="{ item }">
+      <div class="flex justify-center">
+        <AppCheckbox :model-value="item.schedule.fri.active" readonly />
+      </div>
+    </template>
+
+    <template #item-sat="{ item }">
+      <div class="flex justify-center">
+        <AppCheckbox :model-value="item.schedule.sat.active" readonly />
+      </div>
+    </template>
+
+    <template #item-sun="{ item }">
+      <div class="flex justify-center">
+        <AppCheckbox :model-value="item.schedule.sun.active" readonly />
+      </div>
+    </template>
+
+    <template #item-actions="{ item }">
+      <div class="flex items-center justify-center">
+        <TableActionButtons 
+          :id="item.id"
+          @view="id => emit('view', id)"
+          @edit="id => emit('edit', id)"
+          @delete="id => emit('delete', id)"
+        />
+      </div>
     </template>
   </AppTable>
 </template>

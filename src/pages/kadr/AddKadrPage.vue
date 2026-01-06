@@ -1,28 +1,53 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import DashboardLayout from '@/app/layouts/DashboardLayout.vue';
+import { computed } from 'vue';
 import { AppInput, AppSelect } from '@/shared/ui/input';
 import { AppTextarea } from '@/shared/ui/textarea';
 import { AppFileUpload } from '@/shared/ui/file-upload';
 import { FormActions } from '@/shared/ui/form';
 import { useKadrStore } from '@/entities/Kadr';
+import EntityFormLayout from '@/shared/ui/layouts/EntityFormLayout.vue';
+import { useEntityForm } from '@/shared/composables/useEntityForm';
 
-const route = useRoute();
-const router = useRouter();
-const kadrStore = useKadrStore();
+interface Props {
+  id?: string | number;
+  mode?: 'add' | 'edit' | 'view';
+}
 
-const isEdit = computed(() => route.name === 'kadr-edit');
-const employeeId = computed(() => route.params.id as string);
+const props = withDefaults(defineProps<Props>(), {
+  mode: 'add',
+});
 
-const form = ref({
-  name: '',
-  position: '',
-  birthDate: '',
-  role: '' as any,
-  gender: '',
-  startDate: '',
-  comment: '',
+const store = useKadrStore();
+
+const { 
+  form, 
+  handleSave, 
+  goBack 
+} = useEntityForm({
+  store,
+  id: props.id,
+  mode: props.mode,
+  backRoute: '/kadr',
+  initialState: {
+    photo: '', // Avatar
+    cvUrl: '', // CV File
+    name: '',
+    position: '',
+    birthDate: '',
+    role: '',
+    gender: '',
+    startDate: '', 
+    comment: '',
+  }
+});
+
+const isEdit = computed(() => props.mode === 'edit');
+const isView = computed(() => props.mode === 'view');
+
+const pageTitle = computed(() => {
+  if (isEdit.value) return 'Редактировать сотрудника';
+  if (isView.value) return 'Просмотр сотрудника';
+  return 'Добавить сотрудника';
 });
 
 const positions = [
@@ -46,49 +71,25 @@ const genders = [
   { value: 'женщина', label: 'Женщина' },
 ];
 
-onMounted(() => {
-  if (isEdit.value && employeeId.value) {
-    const emp = kadrStore.employees.find(e => String(e.id) === employeeId.value);
-    if (emp) {
-      form.value = {
-        name: emp.name,
-        position: emp.position,
-        birthDate: emp.birthDate,
-        role: emp.role,
-        gender: emp.gender,
-        startDate: '', // Mock data doesn't have this yet
-        comment: '',
-      };
-    }
-  }
-});
-
-const onSave = () => {
-  // Logic to save or update
-  console.log('Saving...', form.value);
-  router.push('/kadr');
+const validate = () => {
+    // Basic validation implementation
+    if (!form.value.name) return false;
+    if (!form.value.position) return false;
+    return true;
 };
 
-const onCancel = () => {
-  router.back();
+const onSave = async () => {
+  await handleSave(validate);
 };
 </script>
 
 <template>
-  <DashboardLayout>
-    <div class="max-w-[1200px] mx-auto font-manrope">
-      <!-- Breadcrumbs -->
-      <div class="mb-6">
-        <h1 class="text-[32px] font-bold text-[#1B3E69] mb-1">
-          {{ isEdit ? 'Редактировать сотрудника' : 'Добавить сотрудника' }}
-        </h1>
-        <div class="flex items-center gap-2 text-sm font-medium">
-          <router-link to="/kadr" class="text-[#8DA2C0] hover:text-[#1B3E69]">Сотрудники</router-link>
-          <span class="text-[#8DA2C0]">/</span>
-          <span class="text-[#1B3E69]">{{ isEdit ? 'Редактировать сотрудника' : 'Добавить сотрудника' }}</span>
-        </div>
-      </div>
-
+  <EntityFormLayout 
+    :title="pageTitle" 
+    parent-title="Сотрудники" 
+    parent-route="/kadr"
+    :loading="store.isLoading"
+  >
       <div class="space-y-8">
         <!-- Main Form Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
@@ -96,6 +97,7 @@ const onCancel = () => {
             v-model="form.name" 
             label="ФИО *" 
             placeholder="ФИО сотрудника"
+            :disabled="isView"
           />
           
           <AppSelect 
@@ -103,12 +105,14 @@ const onCancel = () => {
             :options="positions"
             label="Должность *"
             placeholder="Выберите должность"
+            :disabled="isView"
           />
 
           <AppInput 
             v-model="form.birthDate" 
             label="Дата рождения *" 
             placeholder="дд.мм.гггг"
+            :disabled="isView"
           />
 
           <AppSelect 
@@ -116,6 +120,7 @@ const onCancel = () => {
             :options="roles"
             label="Роль *"
             placeholder="Выберите роль"
+            :disabled="isView"
           />
 
           <AppSelect 
@@ -123,12 +128,14 @@ const onCancel = () => {
             :options="genders"
             label="Пол *"
             placeholder="Выберите пол"
+            :disabled="isView"
           />
 
           <AppInput 
             v-model="form.startDate" 
             label="Дата начала работы *" 
             placeholder="дд.мм.гггг"
+            :disabled="isView"
           />
         </div>
 
@@ -143,6 +150,7 @@ const onCancel = () => {
                    variant="minimal"
                   type="image" 
                   placeholder="Выберите аватар" 
+                  :disabled="isView"
                 />
                 <!-- Vertical Dotted Separator -->
                 <div class="absolute right-0 top-[20%] bottom-[20%] border-r border-dashed border-[#DDE2E4]"></div>
@@ -152,6 +160,7 @@ const onCancel = () => {
                   variant="minimal"
                   type="file" 
                   placeholder="CV - сотрудника" 
+                  :disabled="isView"
                 />
               </div>
             </div>
@@ -164,13 +173,18 @@ const onCancel = () => {
               v-model="form.comment" 
               placeholder="Напишите что-нибудь..."
               class="h-[100px]"
+              :disabled="isView"
             />
           </div>
         </div>
 
         <!-- Actions -->
-        <FormActions @save="onSave" @cancel="onCancel" />
+        <FormActions 
+            :is-loading="store.isLoading"
+            @save="onSave" 
+            @cancel="goBack" 
+            :hide-save="isView"
+        />
       </div>
-    </div>
-  </DashboardLayout>
+  </EntityFormLayout>
 </template>

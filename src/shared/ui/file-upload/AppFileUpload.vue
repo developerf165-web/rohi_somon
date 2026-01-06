@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Image as ImageIcon, FileText, X } from 'lucide-vue-next';
 
 interface Props {
@@ -9,12 +9,16 @@ interface Props {
   placeholder?: string;
   accept?: string;
   maxFiles?: number;
+  disabled?: boolean;
+  existingFiles?: string[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
   variant: 'default',
   type: 'image',
   maxFiles: 1,
+  disabled: false,
+  existingFiles: () => [],
 });
 
 const emit = defineEmits<{
@@ -23,6 +27,15 @@ const emit = defineEmits<{
 
 const files = ref<File[]>([]);
 const previews = ref<string[]>([]);
+const existingPreviews = ref<string[]>([]);
+
+// Initialize existing files
+watch(() => props.existingFiles, (newFiles) => {
+  existingPreviews.value = [...newFiles];
+}, { immediate: true, deep: true });
+
+const allPreviews = computed(() => [...existingPreviews.value, ...previews.value]);
+const hasFiles = computed(() => allPreviews.value.length > 0);
 
 const displayPlaceholder = computed(() => {
   if (props.placeholder) return props.placeholder;
@@ -30,11 +43,13 @@ const displayPlaceholder = computed(() => {
 });
 
 const onFileChange = (event: Event) => {
+  if (props.disabled) return;
   const target = event.target as HTMLInputElement;
   if (!target.files) return;
 
   const newFiles = Array.from(target.files);
-  const remainingSlots = props.maxFiles - files.value.length;
+  const totalCurrentFiles = files.value.length + existingPreviews.value.length;
+  const remainingSlots = props.maxFiles - totalCurrentFiles;
   
   if (remainingSlots <= 0) return;
 
@@ -53,9 +68,20 @@ const onFileChange = (event: Event) => {
 };
 
 const removeFile = (index: number) => {
-  files.value.splice(index, 1);
-  previews.value.splice(index, 1);
-  emit('update:files', files.value);
+  if (props.disabled) return;
+  
+  // If index is within existing files range
+  if (index < existingPreviews.value.length) {
+    // For now, we don't strictly "delete" existing files from server, just hide them locally
+    // In a real app we might emit an event 'remove-existing'
+    existingPreviews.value.splice(index, 1);
+  } else {
+    // It's a new file
+    const newFileIndex = index - existingPreviews.value.length;
+    files.value.splice(newFileIndex, 1);
+    previews.value.splice(newFileIndex, 1);
+    emit('update:files', files.value);
+  }
 };
 </script>
 
@@ -68,9 +94,10 @@ const removeFile = (index: number) => {
       :accept="accept || (type === 'image' ? 'image/*' : '.pdf,.doc,.docx')"
       :multiple="maxFiles > 1"
       @change="onFileChange"
+      :disabled="disabled"
     />
     
-    <div v-if="files.length === 0" class="flex flex-col items-center gap-1 group-hover:scale-105 transition-transform duration-200">
+    <div v-if="!hasFiles" class="flex flex-col items-center gap-1 group-hover:scale-105 transition-transform duration-200" :class="{ 'opacity-50': disabled }">
       <div class="text-[#8DA2C0] group-hover:text-[#1B3E69] transition-colors">
         <ImageIcon v-if="type === 'image'" :size="32" stroke-width="1.5" />
         <FileText v-else :size="32" stroke-width="1.5" />
@@ -80,22 +107,23 @@ const removeFile = (index: number) => {
           {{ displayPlaceholder }}
         </span>
         <span class="text-[#8DA2C0] text-[12px] font-medium leading-tight">
-          Файл не выбран
+          {{ disabled ? 'Загрузка отключена' : 'Файл не выбран' }}
         </span>
       </div>
     </div>
 
     <div v-else class="flex flex-wrap gap-4 justify-center">
-      <div v-for="(file, idx) in files" :key="idx" class="relative group/item">
-        <div v-if="type === 'image' && previews[idx]" class="w-16 h-16 rounded-lg overflow-hidden border border-[#DDE2E4]">
-          <img :src="previews[idx]" class="w-full h-full object-cover" />
+      <div v-for="(preview, idx) in allPreviews" :key="idx" class="relative group/item">
+        <div v-if="type === 'image' && preview" class="w-16 h-16 rounded-lg overflow-hidden border border-[#DDE2E4]">
+          <img :src="preview" class="w-full h-full object-cover" />
         </div>
         <div v-else class="w-20 h-20 rounded-lg bg-[#F4F7FA] border border-[#DDE2E4] flex flex-col items-center justify-center p-2 text-center">
           <FileText class="text-[#1B3E69] mb-1" :size="24" stroke-width="1.5" />
-          <span class="text-[10px] text-[#3F5575] font-medium truncate w-full px-1">{{ file.name }}</span>
+          <span class="text-[10px] text-[#3F5575] font-medium truncate w-full px-1">Файл</span>
         </div>
         
         <button 
+          v-if="!disabled"
           @click.stop="removeFile(idx)"
           class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow-sm hover:bg-red-600 transition-colors z-20"
         >
@@ -111,15 +139,16 @@ const removeFile = (index: number) => {
       {{ label }}
     </label>
     
-    <div class="bg-white border border-[#C6D6E8] rounded-[6px] flex overflow-hidden min-h-[100px] flex-1">
+    <div class="bg-white border border-[#C6D6E8] rounded-[6px] flex overflow-hidden min-h-[100px] flex-1" :class="{ 'bg-gray-50': disabled }">
       <!-- Left: Upload Trigger -->
-      <label class="w-[180px] flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50/50 transition-colors shrink-0 relative py-2">
+      <label class="w-[180px] flex flex-col items-center justify-center transition-colors shrink-0 relative py-2" :class="disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:bg-slate-50/50'">
         <input 
           type="file" 
           class="hidden" 
           :accept="accept || (type === 'image' ? 'image/*' : '.pdf,.doc,.docx')"
           :multiple="maxFiles > 1"
           @change="onFileChange"
+          :disabled="disabled"
         />
         <div class="w-[48px] h-[48px] border border-[#8DA2C0] rounded-[10px] flex items-center justify-center mb-2">
           <ImageIcon v-if="type === 'image'" class="w-6 h-6 text-[#8DA2C0]" />
@@ -133,21 +162,22 @@ const removeFile = (index: number) => {
 
       <!-- Right: Previews/Placeholder -->
       <div class="flex-1 p-4 flex flex-wrap gap-4 items-center justify-start min-w-0 overflow-y-auto">
-        <div v-if="files.length === 0" class="w-full flex flex-col items-center gap-1 opacity-80">
+        <div v-if="!hasFiles" class="w-full flex flex-col items-center gap-1 opacity-80">
           <span class="text-[14px] text-[#1B3E69] font-bold">Файлы не выбраны</span>
-          <span class="text-[12px] text-[#8DA2C0] font-medium">Выберите файл для загрузки</span>
+          <span class="text-[12px] text-[#8DA2C0] font-medium">{{ disabled ? 'Загрузка отключена' : 'Выберите файл для загрузки' }}</span>
         </div>
         
-        <div v-for="(file, idx) in files" :key="idx" class="relative group/item">
-          <div v-if="type === 'image' && previews[idx]" class="w-[92px] h-[92px] rounded-[6px] overflow-hidden border border-[#DDE2E4]">
-            <img :src="previews[idx]" class="w-full h-full object-cover" />
+        <div v-for="(preview, idx) in allPreviews" :key="idx" class="relative group/item">
+          <div v-if="type === 'image' && preview" class="w-[92px] h-[92px] rounded-[6px] overflow-hidden border border-[#DDE2E4]">
+            <img :src="preview" class="w-full h-full object-cover" />
           </div>
           <div v-else class="w-[92px] h-[92px] rounded-[6px] bg-[#F4F7FA] border border-[#DDE2E4] flex flex-col items-center justify-center p-2 text-center">
             <FileText class="text-[#1B3E69] mb-1" :size="32" stroke-width="1.5" />
-            <span class="text-[10px] text-[#3F5575] font-medium truncate w-full px-1">{{ file.name }}</span>
+            <span class="text-[10px] text-[#3F5575] font-medium truncate w-full px-1">Файл</span>
           </div>
           
           <button 
+            v-if="!disabled"
             @click.stop="removeFile(idx)"
             class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-sm hover:bg-red-600 transition-colors z-20"
           >
@@ -158,3 +188,4 @@ const removeFile = (index: number) => {
     </div>
   </div>
 </template>
+

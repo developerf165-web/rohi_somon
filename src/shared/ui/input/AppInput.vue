@@ -23,7 +23,7 @@ const inputId = `input-${Math.random().toString(36).slice(2, 9)}`;
 
 const inputClasses = computed(() => {
   return [
-    'flex h-9 w-full rounded-[6px] border bg-[var(--app-input-bg,white)] px-3 py-2 text-sm ring-offset-white transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-secondary-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#1B3E69] disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-secondary-950 dark:placeholder:text-secondary-400',
+    'flex h-[46px] w-full rounded-[10px] border bg-[var(--app-input-bg,white)] px-4 py-2 text-sm ring-offset-white transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-secondary-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#1B3E69] disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-secondary-950 dark:placeholder:text-secondary-400',
     props.error ? 'border-red-500 text-red-500 focus-visible:ring-red-500' : 'border-[#C6D6E8] text-[#1B3E69] focus-visible:border-[#1B3E69]'
   ].join(' ');
 });
@@ -53,12 +53,18 @@ const onInput = (event: Event) => {
     <label 
       v-if="formattedLabel" 
       :for="inputId"
-      class="text-[16px] font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-[#1B3E69]"
+      class="text-[15px] font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-[#1B3E69]"
     >
       {{ formattedLabel.text }}
       <span v-if="formattedLabel.required" class="text-red-500 ml-0.5">*</span>
     </label>
     <div class="relative flex items-center">
+      <div 
+        v-if="$slots.prefix" 
+        class="absolute left-4 flex items-center justify-center text-[#8DA2C0]"
+      >
+        <slot name="prefix"></slot>
+      </div>
       <input
         :id="inputId"
         :type="type"
@@ -67,7 +73,8 @@ const onInput = (event: Event) => {
         :disabled="disabled"
         :class="[
           inputClasses,
-          $slots.append ? 'pr-10' : ''
+          $slots.append ? 'pr-10' : '',
+          $slots.prefix ? 'pl-11' : ''
         ]"
         class="placeholder-[#8DA2C0]"
         @input="onInput"

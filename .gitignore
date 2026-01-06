@@ -47,3 +47,6 @@ Thumbs.db
 # Documentation & Info
 *.md
 !README.md
+figma_photo/
+logo.md
+figma_info.md

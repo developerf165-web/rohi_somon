@@ -63,87 +63,131 @@ export const useKadrStore = defineStore('kadr', () => {
     try {
       // Mock API call
       await new Promise((resolve) => setTimeout(resolve, 500));
-      employees.value = [
-        {
-          id: 1,
-          photo: '',
-          name: 'Ашурова Шабнам А.',
-          position: 'Работник офиса',
-          birthDate: '03.10.2004',
-          cv: 'view',
-          cvUrl: 'https://example.com/cv.pdf',
-          role: 'worker',
-          gender: 'женщина'
-        },
-        {
-          id: 2,
-          photo: '',
-          name: 'Иванов Иван И.',
-          position: 'Менеджер',
-          birthDate: '15.05.1990',
-          cv: 'view',
-          role: 'manager',
-          gender: 'мужчина'
-        },
-        {
-          id: 3,
-          name: 'Шарипов Олим Г.',
-          photo: '',
-          position: 'Продавец',
-          birthDate: '01.12.2001',
-          cv: 'view',
-          cvUrl: 'https://example.com/cv2.pdf',
-          role: 'saler',
-          gender: 'мужчина',
-        },
-        {
-          id: 4,
-          name: 'Саидов Бахром',
-          photo: '',
-          position: 'Продавец',
-          birthDate: '10.12.1995',
-          cv: 'view',
-          role: 'saler',
-          gender: 'мужчина',
-        },
-        {
-          id: 5,
-          name: 'Каримова Мафтуна',
-          photo: '',
-          position: 'Менеджер',
-          birthDate: '05.08.1998',
-          cv: 'view',
-          cvUrl: 'https://example.com/cv3.pdf',
-          role: 'manager',
-          gender: 'женщина',
-        },
-        {
-          id: 6,
-          name: 'Зоиров Али',
-          photo: '',
-          position: 'Работник офиса',
-          birthDate: '12.02.2000',
-          cv: 'view',
-          role: 'worker',
-          gender: 'мужчина',
-        },
-        {
-          id: 7,
-          name: 'Умаров Фарход',
-          photo: '',
-          position: 'Администратор',
-          birthDate: '30.11.1988',
-          cv: 'view',
-          role: 'admin',
-          gender: 'мужчина'
-        }
-      ];
+      // Only reset if empty to simulate persistent mock data or just keep existing logic
+      if (employees.value.length === 0) {
+          employees.value = [
+            {
+              id: 1,
+              photo: '',
+              name: 'Ашурова Шабнам А.',
+              position: 'Работник офиса',
+              birthDate: '03.10.2004',
+              cv: 'view',
+              cvUrl: 'https://example.com/cv.pdf',
+              role: 'worker',
+              gender: 'женщина'
+            },
+            {
+              id: 2,
+              photo: '',
+              name: 'Иванов Иван И.',
+              position: 'Менеджер',
+              birthDate: '15.05.1990',
+              cv: 'view',
+              role: 'manager',
+              gender: 'мужчина'
+            },
+            {
+              id: 3,
+              name: 'Шарипов Олим Г.',
+              photo: '',
+              position: 'Продавец',
+              birthDate: '01.12.2001',
+              cv: 'view',
+              cvUrl: 'https://example.com/cv2.pdf',
+              role: 'saler',
+              gender: 'мужчина',
+            },
+            {
+              id: 4,
+              name: 'Саидов Бахром',
+              photo: '',
+              position: 'Продавец',
+              birthDate: '10.12.1995',
+              cv: 'view',
+              role: 'saler',
+              gender: 'мужчина',
+            },
+            {
+              id: 5,
+              name: 'Каримова Мафтуна',
+              photo: '',
+              position: 'Менеджер',
+              birthDate: '05.08.1998',
+              cv: 'view',
+              cvUrl: 'https://example.com/cv3.pdf',
+              role: 'manager',
+              gender: 'женщина',
+            },
+            {
+              id: 6,
+              name: 'Зоиров Али',
+              photo: '',
+              position: 'Работник офиса',
+              birthDate: '12.02.2000',
+              cv: 'view',
+              role: 'worker',
+              gender: 'мужчина',
+            },
+            {
+              id: 7,
+              name: 'Умаров Фарход',
+              photo: '',
+              position: 'Администратор',
+              birthDate: '30.11.1988',
+              cv: 'view',
+              role: 'admin',
+              gender: 'мужчина'
+            }
+          ];
+      }
     } catch (e: any) {
       error.value = e.message;
     } finally {
       isLoading.value = false;
     }
   };
+
+  const createItem = async (data: any) => {
+      isLoading.value = true;
+      try {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          const newItem = {
+              id: Math.floor(Math.random() * 10000),
+              ...data,
+              cv: data.cvUrl ? 'view' : 'missing'
+          };
+          employees.value.unshift(newItem);
+          return true;
+      } catch (e) {
+          error.value = 'Failed to create employee';
+          return false;
+      } finally {
+          isLoading.value = false;
+      }
+  };
+
+  const updateItem = async (id: string | number, data: any) => {
+      isLoading.value = true;
+      try {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          const index = employees.value.findIndex(e => e.id == id);
+          if (index !== -1) {
+              employees.value[index] = { ...employees.value[index], ...data };
+              return true;
+          }
+          return false;
+      } catch (e) {
+          error.value = 'Failed to update employee';
+          return false;
+      } finally {
+          isLoading.value = false;
+      }
+  };
+
+  // Alias for generic useEntityForm compatibility
+  const fetchItems = fetchEmployees;
+  const items = employees;
 
   const removeEmployee = (id: number | string) => {
     employees.value = employees.value.filter(emp => emp.id !== id);
@@ -168,5 +212,9 @@ export const useKadrStore = defineStore('kadr', () => {
     fetchEmployees,
     removeEmployee,
     resetFilters,
+    createItem,
+    updateItem,
+    fetchItems,
+    items,
   };
 });

@@ -1,15 +1,30 @@
 <script setup lang="ts">
-import { IconPoints, IconSettings, IconLogout, IconKadr, IconVacation, IconSchedule } from '@/shared/assets/icons';
+import { IconSettings, IconLogout } from '@/shared/assets/icons';
+import { 
+  MapPin, 
+  Users, 
+  Plane, 
+  CalendarDays,
+  Warehouse,
+  FileText,
+  Truck,
+  ArrowRightLeft
+} from 'lucide-vue-next';
 import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
 
 const menuItems = [
-  { id: 'points', label: 'Точки', icon: IconPoints, path: '/' },
-  { id: 'vacations', label: 'Отпуска, отгулы', icon: IconVacation, path: '/vacations' },
-  { id: 'schedules', label: 'Расписания', icon: IconSchedule, path: '/schedules' },
-  { id: 'kadr', label: 'Сотрудники', icon: IconKadr, path: '/kadr' },
+  { id: 'points', label: 'Точки', icon: MapPin, path: '/' },
+  { id: 'arrival', label: 'Приход', icon: ArrowRightLeft, path: '/arrival' },
+  { id: 'expense', label: 'Расход', icon: ArrowRightLeft, path: '/expense' },
+  { id: 'suppliers', label: 'Поставщики', icon: Truck, path: '/suppliers' },
+  { id: 'sklad', label: 'Склад', icon: Warehouse, path: '/sklad' },
+  { id: 'nomenclature', label: 'Номенклатура', icon: FileText, path: '/nomenclature' },
+  { id: 'kadr', label: 'Сотрудники', icon: Users, path: '/kadr' },
+  { id: 'vacations', label: 'Отпуска, отгулы', icon: Plane, path: '/vacations' },
+  { id: 'schedules', label: 'Расписания', icon: CalendarDays, path: '/schedules' },
 ];
 
 const bottomItems = [

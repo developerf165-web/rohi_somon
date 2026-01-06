@@ -1,54 +1,91 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import DashboardLayout from '@/app/layouts/DashboardLayout.vue';
 import { AppSelect } from '@/shared/ui/select';
-import { AppCheckbox } from '@/shared/ui/checkbox';
 import { FormActions } from '@/shared/ui/form';
+import { useScheduleStore } from '@/entities/Schedule';
+import { weekDays, scheduleTypes } from '@/entities/Schedule/model/constants';
+import { useScheduleForm } from '@/features/manage-schedule/model/useScheduleForm';
+import ScheduleDayRow from '@/features/manage-schedule/ui/ScheduleDayRow.vue';
 
 const router = useRouter();
+const route = useRoute();
+const store = useScheduleStore();
 
-// Mock data for users - in real app would come from store
+const props = defineProps<{
+  id?: string;
+}>();
+
+// Modes
+const isEditMode = computed(() => route.name === 'schedules-edit');
+const isViewMode = computed(() => route.name === 'schedules-view');
+const isCreateMode = computed(() => !isEditMode.value && !isViewMode.value);
+
+const { 
+  schedule, 
+  loadSchedule, 
+  onDayActiveChange, 
+  addInterval, 
+  removeInterval, 
+  copyToAllDays, 
+  validateSchedule 
+} = useScheduleForm();
+
+const pageTitle = computed(() => {
+  if (isCreateMode.value) return 'Добавить расписания';
+  if (isEditMode.value) return 'Изменить расписания';
+  return 'Просмотр расписания';
+});
+
+const submitButtonText = computed(() => {
+  if (isCreateMode.value) return 'Сохранить';
+  if (isEditMode.value) return 'Изменить';
+  return 'Редактировать'; // For View mode action
+});
+
+// Mock data for users
 const users = [
   { value: 1, label: 'Нуриддин Шахобов Фаррухович' },
   { value: 2, label: 'Алиев Вали' },
+  { value: 101, label: 'Нуриддин Шахобов Фаррухович' }, // Match mock store data
+  { value: 102, label: 'Нуриддин Шахобов Фаррухович' },
 ];
-
-const scheduleTypes = [
-  { value: 'shift', label: 'Сменный' },
-  { value: 'fixed', label: 'Постоянный' },
-];
-
-const weekDays = [
-  { key: 'mon', label: 'Понедельник' },
-  { key: 'tue', label: 'Вторник' },
-  { key: 'wed', label: 'Среда' },
-  { key: 'thu', label: 'Четверг' },
-  { key: 'fri', label: 'Пятница' },
-  { key: 'sat', label: 'Суббота' },
-  { key: 'sun', label: 'Воскресенье' },
-] as const;
 
 const selectedUser = ref<number | null>(null);
 const selectedType = ref<string | null>(null);
 
-
-const schedule = reactive({
-  mon: { active: false, start: '08:00', end: '17:00' },
-  tue: { active: false, start: '08:00', end: '17:00' },
-  wed: { active: false, start: '08:00', end: '17:00' },
-  thu: { active: false, start: '08:00', end: '17:00' },
-  fri: { active: false, start: '08:00', end: '17:00' },
-  sat: { active: false, start: '08:00', end: '17:00' },
-  sun: { active: false, start: '08:00', end: '17:00' },
+onMounted(() => {
+  if (props.id) {
+    const existingSchedule = loadSchedule(Number(props.id));
+    if (existingSchedule) {
+      selectedUser.value = existingSchedule.employeeId;
+      selectedType.value = 'fixed'; // Mock type
+    }
+  }
 });
 
 const onSave = () => {
-  console.log('Saving schedule:', {
-    userId: selectedUser.value,
-    type: selectedType.value,
+  if (isViewMode.value) {
+    // Navigate to edit
+    router.push(`/schedules/edit/${props.id}`);
+    return;
+  }
+
+  if (!validateSchedule(selectedType.value)) return;
+
+  const payload = {
+    id: props.id ? Number(props.id) : 0, 
+    employeeId: selectedUser.value || 0,
+    fio: users.find(u => u.value === selectedUser.value)?.label || 'Unknown',
     schedule: { ...schedule }
-  });
+  };
+
+  if (isEditMode.value) {
+    store.updateSchedule(payload);
+  } else {
+    store.addSchedule(payload);
+  }
   router.push('/schedules');
 };
 
@@ -68,7 +105,7 @@ const onCancel = () => {
             Расписания
           </router-link>
           <span class="text-[#8FA0B2]">/</span>
-          <span class="text-[#3F5575]">Добавить расписания</span>
+          <span class="text-[#3F5575]">{{ pageTitle }}</span>
         </div>
       </div>
 
@@ -86,6 +123,7 @@ const onCancel = () => {
               v-model="selectedUser"
               :options="users"
               placeholder="Выберите пользователя"
+              :disabled="isViewMode || isEditMode"
             />
           </div>
 
@@ -98,48 +136,31 @@ const onCancel = () => {
               v-model="selectedType"
               :options="scheduleTypes"
               placeholder="Выберите тип"
+              :disabled="isViewMode"
             />
           </div>
         </div>
 
         <!-- Days Grid -->
         <div class="grid grid-cols-2 gap-x-8 gap-y-6">
-          <div v-for="day in weekDays" :key="day.key" class="flex flex-col gap-3">
-            <!-- Checkbox -->
-            <div class="h-6 flex items-center">
-              <AppCheckbox
-                v-model="schedule[day.key].active"
-                :label="day.label"
-                class="font-bold text-[#1B3E69]"
-              />
-            </div>
-
-            <!-- Time Inputs (Conditional) -->
-            <div v-if="schedule[day.key].active" class="flex items-center gap-4 pl-0">
-              <div class="flex-1 flex flex-col gap-1">
-                <span class="text-[13px] text-[#5B7395]">От:</span>
-                <input 
-                  v-model="schedule[day.key].start"
-                  type="time"
-                  class="w-full h-10 px-3 bg-white border border-[#C6D6E8] rounded-lg text-[14px] text-[#3F5575] focus:outline-none focus:border-[#127EEE]"
-                />
-              </div>
-              <div class="flex-1 flex flex-col gap-1">
-                <span class="text-[13px] text-[#5B7395]">До:</span>
-                <input 
-                  v-model="schedule[day.key].end"
-                  type="time"
-                  class="w-full h-10 px-3 bg-white border border-[#C6D6E8] rounded-lg text-[14px] text-[#3F5575] focus:outline-none focus:border-[#127EEE]"
-                />
-              </div>
-            </div>
+          <div v-for="day in weekDays" :key="day.key">
+            <ScheduleDayRow
+              :day-key="day.key"
+              :label="day.label"
+              :day-data="schedule[day.key]"
+              :is-view-mode="isViewMode"
+              @update:active="(val) => onDayActiveChange(day.key, val)"
+              @add-interval="addInterval(day.key)"
+              @remove-interval="(idx) => removeInterval(day.key, idx)"
+              @copy-to-all="copyToAllDays(day.key)"
+            />
           </div>
         </div>
 
         <!-- Actions -->
         <div class="flex justify-end pt-4">
           <FormActions
-            save-text="Сохранить"
+            :save-text="submitButtonText"
             cancel-text="Отмена"
             @save="onSave"
             @cancel="onCancel"

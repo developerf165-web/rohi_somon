@@ -1,47 +1,41 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { LMap, LTileLayer, LMarker } from '@vue-leaflet/vue-leaflet';
+import { ref } from 'vue';
 import { AppModal } from '@/shared/ui/modal';
 import { AppButton } from '@/shared/ui/button';
-import { MAP_CONFIG } from '@/shared/config/map';
+import PointMap from './PointMap.vue';
 
 interface Props {
   show: boolean;
   initialLat?: number | string;
   initialLng?: number | string;
+  readonly?: boolean;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  readonly: false,
+});
 
 const emit = defineEmits<{
   (e: 'close'): void;
   (e: 'select', coords: { lat: number; lng: number }): void;
 }>();
 
-const zoom = ref(MAP_CONFIG.DEFAULT_ZOOM);
-const center = ref<[number, number]>(MAP_CONFIG.DEFAULT_CENTER);
-const markerPos = ref<[number, number]>(MAP_CONFIG.DEFAULT_CENTER);
+const currentCoords = ref<{ lat: number; lng: number } | null>(null);
 
-watch(() => props.show, (newShow) => {
-  if (newShow) {
-    if (props.initialLat && props.initialLng) {
-      const lat = Number(props.initialLat);
-      const lng = Number(props.initialLng);
-      if (!isNaN(lat) && !isNaN(lng)) {
-        center.value = [lat, lng];
-        markerPos.value = [lat, lng];
-      }
-    }
-  }
-});
-
-const onMapClick = (event: any) => {
-  const { lat, lng } = event.latlng;
-  markerPos.value = [lat, lng];
+const onCoordsUpdate = (coords: { lat: number; lng: number }) => {
+  currentCoords.value = coords;
 };
 
 const onSelect = () => {
-  emit('select', { lat: markerPos.value[0], lng: markerPos.value[1] });
+  if (props.readonly || !currentCoords.value) {
+    if (props.initialLat && props.initialLng) {
+      // Fallback to initial if nothing moved
+      emit('select', { lat: Number(props.initialLat), lng: Number(props.initialLng) });
+    }
+    emit('close');
+    return;
+  }
+  emit('select', currentCoords.value);
   emit('close');
 };
 </script>
@@ -54,58 +48,37 @@ const onSelect = () => {
     @close="emit('close')"
   >
     <div class="h-[350px] w-full relative">
-      <l-map
+      <PointMap
         v-if="show"
-        ref="map"
-        v-model:zoom="zoom"
-        :center="center"
-        :use-global-leaflet="false"
-        class="h-full w-full"
-        @click="onMapClick"
-      >
-        <l-tile-layer
-          :url="MAP_CONFIG.TILE_URL"
-          :attribution="MAP_CONFIG.ATTRIBUTION"
-          layer-type="base"
-          name="OpenStreetMap"
-        ></l-tile-layer>
-        <l-marker :lat-lng="markerPos" draggable @moveend="(e: any) => markerPos = [e.target.getLatLng().lat, e.target.getLatLng().lng]"></l-marker>
-      </l-map>
+        :lat="initialLat"
+        :lng="initialLng"
+        :readonly="readonly"
+        @update:coords="onCoordsUpdate"
+      />
     </div>
 
     <template #footer>
-      <div class="flex items-center justify-between w-full">
-        <div class="flex gap-6 text-[15px] text-[#1B3E69] font-medium">
-          <div>
-            <span class="text-[#8DA2C0]">Долгота:</span>
-            <span class="ml-2 font-bold">{{ markerPos[1].toFixed(7) }}</span>
-          </div>
-          <div>
-            <span class="text-[#8DA2C0]">Широта:</span>
-            <span class="ml-2 font-bold">{{ markerPos[0].toFixed(7) }}</span>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <AppButton 
-            variant="secondary" 
-            class="w-[140px] h-[45px] border-[#C6D6E8] text-[#1B3E69]"
-            @click="emit('close')"
-          >
-            Отмена
-          </AppButton>
-          <AppButton 
-            variant="primary" 
-            class="w-[140px] h-[45px] bg-[#1B3E69]"
-            @click="onSelect"
-          >
-            Выбрать
-          </AppButton>
-        </div>
+      <div class="flex items-center justify-end w-full gap-3">
+        <AppButton 
+          variant="secondary" 
+          class="w-[140px] h-[45px] border-[#C6D6E8] text-[#1B3E69]"
+          @click="emit('close')"
+        >
+          {{ readonly ? 'Закрыть' : 'Отмена' }}
+        </AppButton>
+        <AppButton 
+          v-if="!readonly"
+          variant="primary" 
+          class="w-[140px] h-[45px] bg-[#1B3E69]"
+          @click="onSelect"
+        >
+          Выбрать
+        </AppButton>
       </div>
     </template>
   </AppModal>
 </template>
+
 
 <style>
 /* Leaflet marker icon fix for Vite */

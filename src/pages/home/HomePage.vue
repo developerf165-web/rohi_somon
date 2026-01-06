@@ -1,14 +1,23 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import DashboardLayout from '@/app/layouts/DashboardLayout.vue';
-import { PointsHeader } from '@/widgets/PointsHeader';
-import { PointGrid } from '@/widgets/PointGrid';
 import { useRouter } from 'vue-router';
+import { PointGrid } from '@/widgets/PointGrid';
 import { usePointStore } from '@/entities/Point';
+import { MAP_CONFIG } from '@/shared/config/map';
+import DeletePointModal from '@/features/create-point/ui/DeletePointModal.vue';
+import MapPickerModal from '@/features/create-point/ui/MapPickerModal.vue';
+import { EntityListLayout } from '@/shared/ui/layouts';
 
 const search = ref('');
 const pointStore = usePointStore();
 const router = useRouter();
+
+const isDeleteModalOpen = ref(false);
+const pointToDeleteId = ref<number | string | null>(null);
+const isDeleting = ref(false);
+
+const isMapModalOpen = ref(false);
+const selectedMapPoint = ref<{ lat: number|string; lng: number|string } | null>(null);
 
 onMounted(() => {
   pointStore.fetchPoints();
@@ -18,32 +27,56 @@ const onAdd = () => {
   router.push('/points/add');
 };
 
-const onView = (_id: number | string) => {};
-const onEdit = (_id: number | string) => {};
+const onView = (id: number | string) => {
+  router.push(`/points/view/${id}`);
+};
+const onEdit = (id: number | string) => {
+  router.push(`/points/edit/${id}`);
+};
 const onDelete = (id: number | string) => {
-  if (confirm('Are you sure you want to delete this point?')) {
-    pointStore.removePoint(id);
+  pointToDeleteId.value = id;
+  isDeleteModalOpen.value = true;
+};
+
+const confirmDelete = async () => {
+  if (pointToDeleteId.value) {
+    isDeleting.value = true;
+    try {
+      await pointStore.removePoint(pointToDeleteId.value);
+    } finally {
+      isDeleting.value = false;
+      isDeleteModalOpen.value = false;
+      pointToDeleteId.value = null;
+    }
   }
 };
-const onMap = (_id: number | string) => {};
+
+const onMap = (id: number | string) => {
+  const point = pointStore.points.find(p => p.id == id);
+  if (point) {
+    // Determine coords (prefer point.lat/lng, fallback to default if missing)
+    const lat = point.lat || MAP_CONFIG.DEFAULT_CENTER[0].toString();
+    const lng = point.lng || MAP_CONFIG.DEFAULT_CENTER[1].toString();
+    selectedMapPoint.value = { lat, lng };
+    isMapModalOpen.value = true;
+  }
+};
 </script>
 
 <template>
-  <DashboardLayout>
-    <div class="flex flex-col gap-10">
-      <PointsHeader 
-        v-model:searchModel="search" 
-        @add="onAdd" 
-      />
-      
-      <div v-if="pointStore.isLoading" class="flex justify-center py-20">
-        <div class="animate-spinner w-10 h-10"></div>
-      </div>
-
-      <div v-else-if="pointStore.error" class="bg-red-50 text-red-600 p-4 rounded-lg">
+  <EntityListLayout
+    title="Точки"
+    v-model:search="search"
+    placeholder="Поиск по имени"
+    :loading="pointStore.isLoading"
+    @add="onAdd"
+  >
+      <!-- Error Message -->
+      <div v-if="pointStore.error" class="bg-red-50 text-red-600 p-4 rounded-lg">
         {{ pointStore.error }}
       </div>
       
+      <!-- Grid -->
       <PointGrid 
         v-else
         :points="pointStore.points"
@@ -52,6 +85,25 @@ const onMap = (_id: number | string) => {};
         @delete="onDelete"
         @map="onMap"
       />
-    </div>
-  </DashboardLayout>
+
+      <!-- Modals -->
+      <template #modals>
+        <DeletePointModal
+            :show="isDeleteModalOpen"
+            :is-loading="isDeleting"
+            @close="isDeleteModalOpen = false"
+            @confirm="confirmDelete"
+        />
+
+        <MapPickerModal
+            v-if="isMapModalOpen"
+            :show="isMapModalOpen"
+            :initial-lat="selectedMapPoint?.lat"
+            :initial-lng="selectedMapPoint?.lng"
+            :readonly="true"
+            @close="isMapModalOpen = false"
+            @select="() => {}"
+        />
+      </template>
+  </EntityListLayout>
 </template>

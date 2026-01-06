@@ -6,7 +6,7 @@ export const pointsApi = {
    * Fetch all points
    * Currently simulated with mock data
    */
-  async fetchPoints(): Promise<Point[]> {
+    async fetchPoints(): Promise<Point[]> {
     // Simulated network delay
     await new Promise(resolve => setTimeout(resolve, 800));
 
@@ -15,29 +15,48 @@ export const pointsApi = {
         id: 1,
         title: 'Точка №1',
         address: 'Исмоили Сомони 1176',
-        image: PointsImg
+        image: PointsImg,
+        lat: '38.5750',
+        lng: '68.7900',
+        comment: 'Главный офис',
+        images: [PointsImg]
       },
       {
         id: 2,
         title: 'Точка №2',
         address: 'пр. Рудаки 45',
+        lat: '38.5550',
+        lng: '68.7850',
+        comment: 'Центральный филиал',
+        images: []
       },
       {
         id: 3,
         title: 'Точка №3',
         address: 'ул. Айни 12',
-        image: PointsImg
+        image: PointsImg,
+        lat: '38.5600',
+        lng: '68.8000',
+        comment: 'Магазин у дороги',
+        images: [PointsImg]
       },
       {
         id: 4,
         title: 'Точка №4',
         address: 'ул. Борбад 88',
+        lat: '38.5400',
+        lng: '68.7700',
+        comment: 'Складское помещение'
       },
       {
         id: 5,
         title: 'Точка №5',
         address: 'ул. Дехоти 21',
-        image: PointsImg
+        image: PointsImg,
+        lat: '38.5300',
+        lng: '68.7600',
+        comment: 'Пункт выдачи',
+        images: [PointsImg]
       }
     ];
   },
