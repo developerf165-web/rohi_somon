@@ -60,25 +60,31 @@ onMounted(() => {
     const existingSchedule = loadSchedule(Number(props.id));
     if (existingSchedule) {
       selectedUser.value = existingSchedule.employeeId;
-      selectedType.value = 'fixed'; // Mock type
+      // In a real app, type would be in the entity. 
+      // For mock, we'll assume it's stored or default to 'fixed'.
+      selectedType.value = 'fixed'; 
     }
   }
 });
 
 const onSave = () => {
   if (isViewMode.value) {
-    // Navigate to edit
     router.push(`/schedules/edit/${props.id}`);
+    return;
+  }
+
+  if (!selectedUser.value || !selectedType.value) {
+    alert('Пожалуйста, выберите пользователя и тип расписания');
     return;
   }
 
   if (!validateSchedule(selectedType.value)) return;
 
   const payload = {
-    id: props.id ? Number(props.id) : 0, 
-    employeeId: selectedUser.value || 0,
+    id: props.id ? Number(props.id) : Date.now(), 
+    employeeId: selectedUser.value,
     fio: users.find(u => u.value === selectedUser.value)?.label || 'Unknown',
-    schedule: { ...schedule }
+    schedule: JSON.parse(JSON.stringify(schedule))
   };
 
   if (isEditMode.value) {

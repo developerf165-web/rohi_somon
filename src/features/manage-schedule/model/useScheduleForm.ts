@@ -26,6 +26,7 @@ export function useScheduleForm() {
   };
 
   const onDayActiveChange = (key: WeekDayKey, isActive: boolean) => {
+    schedule[key].active = isActive;
     if (isActive && schedule[key].intervals.length === 0) {
        schedule[key].intervals.push({ start: '08:00', end: '17:00' });
     }

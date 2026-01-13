@@ -6,11 +6,13 @@ interface Props {
   title: string;
   placeholder?: string;
   showFilter?: boolean;
+  showAddButton?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
   placeholder: 'Поиск...',
   showFilter: false,
+  showAddButton: true,
 });
 
 const search = defineModel<string>('search', { default: '' });
@@ -55,6 +57,7 @@ defineEmits<{
         </AppButton>
         
         <AppButton
+          v-if="showAddButton"
           variant="primary"
           class="min-w-[120px] h-11 px-6 text-[16px] font-semibold text-[#EFFFEF]"
           @click="$emit('add')"

@@ -8,7 +8,10 @@ import {
   Warehouse,
   FileText,
   Truck,
-  ArrowRightLeft
+  ArrowRightLeft,
+  Banknote,
+  Clock,
+  ShoppingCart
 } from 'lucide-vue-next';
 import { useRouter, useRoute } from 'vue-router';
 
@@ -19,10 +22,14 @@ const menuItems = [
   { id: 'points', label: 'Точки', icon: MapPin, path: '/' },
   { id: 'arrival', label: 'Приход', icon: ArrowRightLeft, path: '/arrival' },
   { id: 'expense', label: 'Расход', icon: ArrowRightLeft, path: '/expense' },
+  { id: 'cashbox', label: 'Касса', icon: Banknote, path: '/cashbox' },
   { id: 'suppliers', label: 'Поставщики', icon: Truck, path: '/suppliers' },
   { id: 'sklad', label: 'Склад', icon: Warehouse, path: '/sklad' },
   { id: 'nomenclature', label: 'Номенклатура', icon: FileText, path: '/nomenclature' },
   { id: 'kadr', label: 'Сотрудники', icon: Users, path: '/kadr' },
+  { id: 'shift', label: 'Смена', icon: Clock, path: '/shift' }, // Added 'Смена' menu item
+  { id: 'sale', label: 'Продажа', icon: ShoppingCart, path: '/sale' },
+  { id: 'encashment', label: 'Инкассация', icon: ArrowRightLeft, path: '/encashment' },
   { id: 'vacations', label: 'Отпуска, отгулы', icon: Plane, path: '/vacations' },
   { id: 'schedules', label: 'Расписания', icon: CalendarDays, path: '/schedules' },
 ];

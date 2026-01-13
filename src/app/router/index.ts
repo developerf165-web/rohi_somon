@@ -197,6 +197,26 @@ const routes = [
     component: () => import('@/pages/add-expense').then(m => m.AddExpensePage),
     props: (route: any) => ({ id: route.params.id, mode: 'view' }),
   },
+  {
+    path: '/cashbox',
+    name: 'cashbox',
+    component: () => import('@/pages/cashbox').then(m => m.CashboxPage),
+  },
+  {
+    path: '/shift',
+    name: 'shift',
+    component: () => import('@/pages/shift').then(m => m.ShiftPage),
+  },
+  {
+    path: '/sale',
+    name: 'sale',
+    component: () => import('@/pages/sale').then(m => m.SalePage),
+  },
+  {
+    path: '/encashment',
+    name: 'encashment',
+    component: () => import('@/pages/encashment').then(m => m.EncashmentPage),
+  },
 ];
 
 
