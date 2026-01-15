@@ -34,6 +34,7 @@ declare module 'vue' {
     CreateCashboxDrawer: typeof import('./../../features/CreateCashbox/ui/CreateCashboxDrawer.vue')['default']
     CreateNomenclatureModal: typeof import('./../../features/create-nomenclature/ui/CreateNomenclatureModal.vue')['default']
     CreateSkladModal: typeof import('./../../features/create-sklad/ui/CreateSkladModal.vue')['default']
+    CreateSupplierModal: typeof import('./../../features/create-supplier/ui/CreateSupplierModal.vue')['default']
     DeleteArrivalModal: typeof import('./../../features/delete-arrival/ui/DeleteArrivalModal.vue')['default']
     DeleteExpenseModal: typeof import('./../../features/delete-expense/ui/DeleteExpenseModal.vue')['default']
     DeleteNomenclatureModal: typeof import('./../../features/create-nomenclature/ui/DeleteNomenclatureModal.vue')['default']

@@ -13,6 +13,7 @@ export const usePointStore = defineStore('point', {
       lat: '',
       lng: '',
       comment: '',
+      images: [],
     }
   }),
 
@@ -52,6 +53,7 @@ export const usePointStore = defineStore('point', {
         lat: '',
         lng: '',
         comment: '',
+        images: [],
       };
     },
 

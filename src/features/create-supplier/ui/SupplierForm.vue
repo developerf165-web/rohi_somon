@@ -8,6 +8,7 @@
  */
 import { AppInput } from '@/shared/ui/input';
 import { AppSelect } from '@/shared/ui/select';
+import { AppTextarea } from '@/shared/ui/textarea';
 import AppFileUpload from '@/shared/ui/file-upload/AppFileUpload.vue';
 import { FormActions } from '@/shared/ui/form';
 import { useEntityForm } from '@/shared/composables/useEntityForm';
@@ -32,7 +33,8 @@ const initialState = {
   type: 'transport', // default
   phoneNumber: '',
   address: '',
-  photo: ''
+  photo: '',
+  comment: ''
 };
 
 const { 
@@ -134,6 +136,16 @@ const onSave = async () => {
             class="h-[150px]" 
             :disabled="isReadOnly" 
             :existing-files="form.photo ? [form.photo] : []"
+            @update:data-urls="(urls) => form.photo = urls[0] || ''"
+          />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-[16px] font-bold text-[#1B3E69]">Комментария</label>
+          <AppTextarea 
+            v-model="form.comment"
+            placeholder="Введите комментарий"
+            class="h-[150px]"
+            :disabled="isReadOnly"
           />
         </div>
       </div>

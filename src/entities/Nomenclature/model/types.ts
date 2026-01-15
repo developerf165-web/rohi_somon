@@ -6,6 +6,7 @@ export interface Nomenclature {
   type: 'Продукт' | 'Топливо';
   barcode: string;
   price: number;
+  category?: string;
   comment?: string;
 }
 
@@ -16,6 +17,7 @@ export interface CreateNomenclatureDto {
   type: 'Продукт' | 'Топливо';
   barcode: string;
   price: number;
+  category?: string;
   comment?: string;
 }
 

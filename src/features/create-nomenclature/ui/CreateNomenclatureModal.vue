@@ -162,10 +162,14 @@ const onSave = async () => {
 
         <div class="grid grid-cols-2 gap-4">
             <div class="flex flex-col gap-1.5">
-                <label class="text-[13px] font-medium text-[#64748B]">Тип *</label>
+                <label class="text-[15px] font-bold text-[#1B3E69]">
+                    Тип
+                    <span v-if="!isReadOnly" class="text-red-500 ml-0.5">*</span>
+                </label>
                 <select 
                     v-model="form.type"
-                    class="h-[46px] px-3 w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-[#0F172A] text-[14px] focus:outline-none focus:border-[#3B82F6] transition-colors"
+                    :disabled="isReadOnly"
+                    class="h-[46px] px-3 w-full bg-white border border-[#C6D6E8] rounded-[10px] text-[#1B3E69] text-[14px] focus:outline-none focus:border-[#1B3E69] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <option value="Продукт">Продукт</option>
                     <option value="Топливо">Топливо</option>
@@ -216,7 +220,7 @@ const onSave = async () => {
           class="w-full sm:w-auto h-[46px] border-[#C6D6E8] text-[#1B3E69] bg-white hover:bg-slate-50 px-8"
           @click="emit('close')"
         >
-          Отмена
+          {{ mode === 'view' ? 'Назад' : 'Отмена' }}
         </AppButton>
         <AppButton 
           v-if="mode !== 'view'"
@@ -226,14 +230,6 @@ const onSave = async () => {
           @click="onSave"
         >
           {{ buttonText }}
-        </AppButton>
-          <AppButton 
-          v-else
-          variant="primary" 
-          class="w-full sm:w-auto h-[46px] bg-[#1B3E69] hover:bg-[#153256] px-8 text-white"
-          @click="emit('close')" 
-        >
-         Закрыть
         </AppButton>
       </div>
     </template>

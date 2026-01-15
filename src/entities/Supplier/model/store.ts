@@ -43,7 +43,8 @@ export const useSupplierStore = defineStore('supplier', () => {
                     type: 'transport',
                     phoneNumber: '+992 (98 765 44 32)',
                     photo: (await import('@/assets/точки.png')).default,
-                    address: ''
+                    address: '',
+                    comment: 'Хороший поставщик'
                 },
                 {
                     id: 2,
@@ -59,7 +60,8 @@ export const useSupplierStore = defineStore('supplier', () => {
                     type: 'company',
                     address: 'Исмоили Сомони 1176',
                     photo: '', 
-                    phoneNumber: ''
+                    phoneNumber: '',
+                    comment: 'Важный партнер'
                 },
                 {
                     id: 4,

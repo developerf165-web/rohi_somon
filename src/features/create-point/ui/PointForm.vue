@@ -36,11 +36,30 @@ const pageTitle = computed(() => {
   }
 });
 
+const breadcrumbTitle = computed(() => {
+  switch (props.mode) {
+    case 'edit': return 'Редактировать точку';
+    case 'view': return 'Просмотр точки';
+    case 'map': return 'Карта';
+    default: return 'Добавить точку';
+  }
+});
+
 const handleCoordsSelect = (coords: { lat: number; lng: number }) => {
   if (isReadOnly.value) return;
-  form.lat = coords.lat.toString();
-  form.lng = coords.lng.toString();
+  form.lat = coords.lat.toFixed(6);
+  form.lng = coords.lng.toFixed(6);
 };
+
+const combinedCoords = computed({
+  get: () => {
+    if (!form.lat || !form.lng) return '';
+    return `${form.lng}, ${form.lat}`;
+  },
+  set: () => {
+    // This is mostly for display/reset, we use map picker for setting
+  }
+});
 
 
 
@@ -56,6 +75,7 @@ const loadData = async () => {
 
   if (point) {
     form.title = point.title;
+    form.address = point.address || '';
     form.lat = point.lat || MAP_CONFIG.DEFAULT_CENTER[0].toString(); 
     form.lng = point.lng || MAP_CONFIG.DEFAULT_CENTER[1].toString();
     form.comment = point.comment || '';
@@ -90,6 +110,8 @@ const handleSave = async () => {
   <EntityFormLayout 
     :title="pageTitle" 
     parent-title="Точки" 
+    parent-route="/points"
+    :breadcrumb-title="breadcrumbTitle"
     :loading="isLoading"
   >
     <!-- Form Content -->
@@ -98,50 +120,53 @@ const handleSave = async () => {
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <AppInput
           v-model="form.title"
-          label="Имя точки *"
-          placeholder="Введите имя"
+          label="Названия *"
+          placeholder="Введите название"
           :error="errors.title"
-          class="col-span-1"
           :disabled="isReadOnly"
         />
 
         <AppInput
-          v-model="form.lng"
-          label="Долгота *"
-          placeholder="Введите долготу"
-          :error="errors.lng"
-          :disabled="isReadOnly"
+          v-model="combinedCoords"
+          label="Долгота / Широта *"
+          placeholder="Выберите долготу и широту"
+          :error="errors.lng || errors.lat"
+          :disabled="true"
+          class="cursor-pointer"
+          @click="!isReadOnly && (isMapModalOpen = true)"
         >
           <template #append>
-            <button @click="isMapModalOpen = true" class="hover:text-primary-500 transition-colors" :disabled="isReadOnly">
+            <button 
+              type="button" 
+              @click.stop="!isReadOnly && (isMapModalOpen = true)" 
+              class="hover:text-primary-500 transition-colors" 
+              :disabled="isReadOnly"
+            >
               <MapPin :size="16" />
             </button>
           </template>
         </AppInput>
 
         <AppInput
-          v-model="form.lat"
-          label="Широта *"
-          placeholder="Введите широту"
-          :error="errors.lat"
+          v-model="form.address"
+          label="Адрес *"
+          placeholder="Введите адрес"
+          :error="errors.address"
           :disabled="isReadOnly"
-        >
-          <template #append>
-            <button @click="isMapModalOpen = true" class="hover:text-primary-500 transition-colors" :disabled="isReadOnly">
-              <MapPin :size="16" />
-            </button>
-          </template>
-        </AppInput>
+        />
       </div>
 
       <!-- Files and Comments Row -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <div class="lg:col-span-8 flex flex-col gap-1">
-          <label class="text-[16px] font-bold text-[#1B3E69]">Файлы</label>
+          <label class="text-[16px] font-bold text-[#1B3E69]">Фото</label>
           <AppFileUpload 
             class="h-[150px]" 
             :disabled="isReadOnly" 
             :existing-files="existingImages"
+            :max-files="10"
+            accept="image/*"
+            @update:data-urls="(urls) => form.images = urls"
           />
         </div>
         <div class="lg:col-span-4 flex flex-col gap-1">

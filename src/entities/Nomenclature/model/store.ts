@@ -5,11 +5,11 @@ import chanelImg from '@/assets/chanel.jpg';
 
 // Mock Data
 const MOCK_ITEMS: Nomenclature[] = [
-  { id: 1, name: 'Катошка', unit: 'кг.', type: 'Продукт', barcode: '412342341234124', price: 5.00, photo: '' }, // No image
-  { id: 2, name: 'Газ', unit: 'литр', type: 'Топливо', barcode: '88888888', price: 4.50, photo: '' }, // No image
-  { id: 3, name: 'RCola 1', unit: 'шт.', type: 'Продукт', barcode: '412342341234124', price: 12.00, photo: chanelImg }, // Image
-  { id: 4, name: 'Газ', unit: 'литр', type: 'Топливо', barcode: '99999999', price: 4.50, photo: '' }, // No image
-  { id: 5, name: 'Метан', unit: 'м³', type: 'Топливо', barcode: '77777777', price: 3.20, photo: '' }, // No image
+  { id: 1, name: 'Катошка', unit: 'кг', type: 'Продукт', barcode: '412342341234124', price: 5.00, photo: '', category: 'Овощи', comment: 'Свежая картошка' },
+  { id: 2, name: 'Газ', unit: 'литр', type: 'Топливо', barcode: '88888888', price: 4.50, photo: '', category: 'Топливо', comment: 'Высокое качество' },
+  { id: 3, name: 'RCola 1', unit: 'шт', type: 'Продукт', barcode: '412342341234124', price: 12.00, photo: chanelImg, category: 'Напитки', comment: 'Очень популярно' },
+  { id: 4, name: 'Газ', unit: 'литр', type: 'Топливо', barcode: '99999999', price: 4.50, photo: '', category: 'Топливо', comment: '' },
+  { id: 5, name: 'Метан', unit: 'м³', type: 'Топливо', barcode: '77777777', price: 3.20, photo: '', category: 'Топливо', comment: '' },
 ];
 
 export const useNomenclatureStore = defineStore('nomenclature', {
@@ -69,6 +69,7 @@ export const useNomenclatureStore = defineStore('nomenclature', {
                 barcode: dto.barcode,
                 price: dto.price,
                 photo: dto.photo,
+                category: dto.category,
                 comment: dto.comment
             };
             
@@ -99,6 +100,7 @@ export const useNomenclatureStore = defineStore('nomenclature', {
                     barcode: dto.barcode,
                     price: dto.price,
                     photo: dto.photo,
+                    category: dto.category,
                     comment: dto.comment
                 };
                 await this.fetchItems();

@@ -54,7 +54,7 @@ const onInput = (event: Event) => {
       class="text-[15px] font-bold text-[#1B3E69] leading-none"
     >
       {{ formattedLabel.text }}
-      <span v-if="formattedLabel.required" class="text-red-500 ml-0.5">*</span>
+      <span v-if="formattedLabel.required && !disabled" class="text-red-500 ml-0.5">*</span>
     </label>
     
     <div class="relative w-full">

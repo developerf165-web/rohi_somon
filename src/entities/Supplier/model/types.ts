@@ -7,4 +7,5 @@ export interface Supplier {
   photo?: string;
   phoneNumber?: string;
   address?: string;
+  comment?: string;
 }

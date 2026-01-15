@@ -15,7 +15,7 @@ export interface CreatePointDto {
   lat: number | string;
   lng: number | string;
   comment: string;
-  images?: File[];
+  images?: string[];
 }
 
 export interface PointState {

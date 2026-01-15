@@ -6,6 +6,7 @@ interface Props {
   title: string;
   parentTitle: string;
   parentRoute?: string;
+  breadcrumbTitle?: string;
   loading?: boolean;
 }
 
@@ -35,7 +36,7 @@ const goBack = () => {
               {{ parentTitle }}
           </span>
           <span class="text-[#8DA2C0] text-[12px]">/</span>
-          <span class="text-[#1B3E69] font-medium">{{ title }}</span>
+          <span class="text-[#1B3E69] font-medium">{{ breadcrumbTitle || title }}</span>
         </nav>
       </div>
 

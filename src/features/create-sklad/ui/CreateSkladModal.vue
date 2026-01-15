@@ -145,6 +145,7 @@ const onSave = async () => {
           label="Имя склада *" 
           placeholder="Введите имя" 
           :error="errors.name"
+          :disabled="mode === 'view'"
         />
         
         <AppSelect
@@ -153,6 +154,7 @@ const onSave = async () => {
             placeholder="Выберите тип"
             :options="typeOptions"
             :error="errors.type"
+            :disabled="mode === 'view'"
         />
       </div>
       
@@ -162,6 +164,7 @@ const onSave = async () => {
             placeholder="Выберите точку"
             :options="pointOptions"
             :error="errors.pointId"
+            :disabled="mode === 'view'"
         />
     </div>
 
@@ -172,7 +175,7 @@ const onSave = async () => {
           class="w-full sm:w-auto h-[46px] border-[#C6D6E8] text-[#1B3E69] bg-white hover:bg-slate-50 px-8"
           @click="emit('close')"
         >
-          Отмена
+          {{ mode === 'view' ? 'Назад' : 'Отмена' }}
         </AppButton>
         <AppButton 
           variant="primary" 

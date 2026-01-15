@@ -56,7 +56,7 @@ const onInput = (event: Event) => {
       class="text-[15px] font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-[#1B3E69]"
     >
       {{ formattedLabel.text }}
-      <span v-if="formattedLabel.required" class="text-red-500 ml-0.5">*</span>
+      <span v-if="formattedLabel.required && !props.disabled" class="text-red-500 ml-0.5">*</span>
     </label>
     <div class="relative flex items-center">
       <div 

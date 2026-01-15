@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { AppButton } from '@/shared/ui/button';
 
 interface Props {
@@ -8,11 +9,15 @@ interface Props {
   hideSave?: boolean;
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
   saveText: 'Сохранить',
-  cancelText: 'Отмена',
   hideSave: false,
+});
+
+const displayCancelText = computed(() => {
+    if (props.cancelText) return props.cancelText;
+    return props.hideSave ? 'Назад' : 'Отмена';
 });
 
 defineEmits<{
@@ -28,7 +33,7 @@ defineEmits<{
       class="w-[190px] h-[46px] border-[#C6D6E8] text-[#1B3E69] bg-white hover:bg-slate-50 px-[56px] py-[12px]"
       @click="$emit('cancel')"
     >
-      {{ cancelText }}
+      {{ displayCancelText }}
     </AppButton>
     <AppButton 
       v-if="!hideSave"

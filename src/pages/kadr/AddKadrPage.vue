@@ -151,6 +151,7 @@ const onSave = async () => {
                   type="image" 
                   placeholder="Выберите аватар" 
                   :disabled="isView"
+                  @update:data-urls="(urls) => form.photo = urls[0] || ''"
                 />
                 <!-- Vertical Dotted Separator -->
                 <div class="absolute right-0 top-[20%] bottom-[20%] border-r border-dashed border-[#DDE2E4]"></div>
@@ -161,6 +162,7 @@ const onSave = async () => {
                   type="file" 
                   placeholder="CV - сотрудника" 
                   :disabled="isView"
+                  @update:data-urls="(urls) => form.cvUrl = urls[0] || ''"
                 />
               </div>
             </div>

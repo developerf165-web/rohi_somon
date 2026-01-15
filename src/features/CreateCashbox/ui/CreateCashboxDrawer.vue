@@ -187,7 +187,7 @@ const onSave = async () => {
         @cancel="onClose"
         @submit="onSave"
         submit-text="Сохранить"
-        cancel-text="Отмена"
+        :cancel-text="isReadOnly ? 'Назад' : 'Отмена'"
         :is-loading="cashboxStore.isLoading"
         :hide-save="isReadOnly"
         class="mt-auto pt-6"

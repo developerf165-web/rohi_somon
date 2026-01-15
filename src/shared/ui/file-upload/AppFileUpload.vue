@@ -23,6 +23,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   (e: 'update:files', files: File[]): void;
+  (e: 'update:dataUrls', urls: string[]): void;
 }>();
 
 const files = ref<File[]>([]);
@@ -39,7 +40,7 @@ const hasFiles = computed(() => allPreviews.value.length > 0);
 
 const displayPlaceholder = computed(() => {
   if (props.placeholder) return props.placeholder;
-  return props.type === 'image' ? 'Выберите аватар' : 'CV - сотрудника';
+  return props.type === 'image' ? 'Выберите фото' : 'Выберите файл';
 });
 
 const onFileChange = (event: Event) => {
@@ -57,10 +58,15 @@ const onFileChange = (event: Event) => {
     files.value.push(file);
     if (props.type === 'image' && file.type.startsWith('image/')) {
       const reader = new FileReader();
-      reader.onload = (e) => previews.value.push(e.target?.result as string);
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        previews.value.push(result);
+        emit('update:dataUrls', allPreviews.value);
+      };
       reader.readAsDataURL(file);
     } else {
       previews.value.push(''); // No preview for non-images
+      emit('update:dataUrls', allPreviews.value);
     }
   });
   
@@ -82,6 +88,7 @@ const removeFile = (index: number) => {
     previews.value.splice(newFileIndex, 1);
     emit('update:files', files.value);
   }
+  emit('update:dataUrls', allPreviews.value);
 };
 </script>
 
@@ -107,7 +114,7 @@ const removeFile = (index: number) => {
           {{ displayPlaceholder }}
         </span>
         <span class="text-[#8DA2C0] text-[12px] font-medium leading-tight">
-          {{ disabled ? 'Загрузка отключена' : 'Файл не выбран' }}
+          {{ disabled ? (type === 'image' ? 'Нет фото' : 'Нет файла') : 'Файл не выбран' }}
         </span>
       </div>
     </div>
@@ -163,8 +170,12 @@ const removeFile = (index: number) => {
       <!-- Right: Previews/Placeholder -->
       <div class="flex-1 p-4 flex flex-wrap gap-4 items-center justify-start min-w-0 overflow-y-auto">
         <div v-if="!hasFiles" class="w-full flex flex-col items-center gap-1 opacity-80">
-          <span class="text-[14px] text-[#1B3E69] font-bold">Файлы не выбраны</span>
-          <span class="text-[12px] text-[#8DA2C0] font-medium">{{ disabled ? 'Загрузка отключена' : 'Выберите файл для загрузки' }}</span>
+          <span class="text-[14px] text-[#1B3E69] font-bold">
+            {{ type === 'image' ? 'Фото не выбраны' : 'Файлы не выбраны' }}
+          </span>
+          <span class="text-[12px] text-[#8DA2C0] font-medium">
+            {{ disabled ? (type === 'image' ? 'Нет фото' : 'Нет файла') : (type === 'image' ? 'PNG, JPG, SVG' : 'Выберите файл для загрузки') }}
+          </span>
         </div>
         
         <div v-for="(preview, idx) in allPreviews" :key="idx" class="relative group/item">

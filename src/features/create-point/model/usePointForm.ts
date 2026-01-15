@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 const pointSchema = z.object({
   title: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
+  address: z.string().min(2, 'Укажите адрес'),
   lat: z.string().min(1, 'Укажите широту'),
   lng: z.string().min(1, 'Укажите долготу'),
   comment: z.string().optional(),
