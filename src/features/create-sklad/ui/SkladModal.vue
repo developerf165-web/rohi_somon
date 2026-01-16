@@ -22,6 +22,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   (e: 'close'): void;
   (e: 'saved'): void;
+  (e: 'edit'): void;
 }>();
 
 const skladStore = useSkladStore();
@@ -43,7 +44,7 @@ const title = computed(() => {
     switch (props.mode) {
         case 'create': return 'Создать склад';
         case 'view': return 'Просмотр склада';
-        case 'edit': return 'Изменить склада'; // Keeping as per screenshot/request, though "Редактировать" is better Russian.
+        case 'edit': return 'Изменить склад'; 
         default: return 'Создать склад';
     }
 });
@@ -99,7 +100,7 @@ const validate = () => {
   errors.value = { name: '', pointId: '', type: '' };
 
   if (!form.value.name) {
-    errors.value.name = 'Введите имя склада';
+    errors.value.name = 'Введите название';
     isValid = false;
   }
   if (!form.value.type) {
@@ -114,19 +115,31 @@ const validate = () => {
 };
 
 const onSave = async () => {
+  if (props.mode === 'view') {
+      emit('edit');
+      return;
+  }
+  
   if (!validate()) return;
   
-  if (form.value.type) {
-      const success = await skladStore.createSklad({
+  let success = false;
+  if (props.mode === 'create') {
+      success = await skladStore.createSklad({
         name: form.value.name,
         pointId: form.value.pointId,
         type: form.value.type as 'Магазин' | 'GSM',
       });
-      
-      if (success) {
-        emit('saved');
-        emit('close');
-      }
+  } else if (props.mode === 'edit' && props.initialData) {
+      success = await skladStore.updateSklad(props.initialData.id, {
+        name: form.value.name,
+        pointId: form.value.pointId,
+        type: form.value.type as 'Магазин' | 'GSM',
+      });
+  }
+  
+  if (success) {
+    emit('saved');
+    emit('close');
   }
 };
 </script>
@@ -142,8 +155,8 @@ const onSave = async () => {
       <div class="grid grid-cols-2 gap-6">
         <AppInput 
           v-model="form.name" 
-          label="Имя склада *" 
-          placeholder="Введите имя" 
+          label="Название *" 
+          placeholder="Введите название" 
           :error="errors.name"
           :disabled="mode === 'view'"
         />

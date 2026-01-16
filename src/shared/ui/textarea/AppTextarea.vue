@@ -23,7 +23,7 @@ const inputId = `textarea-${Math.random().toString(36).slice(2, 9)}`;
 
 const classes = computed(() => {
   return [
-    'flex w-full rounded-[6px] border bg-white px-3 py-2 text-sm transition-all placeholder:text-[#8DA2C0] outline-none focus:border-[#1B3E69] disabled:cursor-not-allowed disabled:opacity-50 resize-none',
+    'flex w-full rounded-[10px] border bg-white px-3 py-2 text-sm transition-all placeholder:text-[#8DA2C0] outline-none focus:border-[#1B3E69] disabled:cursor-not-allowed disabled:opacity-50 resize-none',
     props.error ? 'border-red-500 text-red-500' : 'border-[#C6D6E8] text-[#1B3E69]'
   ].join(' ');
 });

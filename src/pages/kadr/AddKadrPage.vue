@@ -46,7 +46,7 @@ const isEdit = computed(() => props.mode === 'edit');
 const isView = computed(() => props.mode === 'view');
 
 const pageTitle = computed(() => {
-  if (isEdit.value) return 'Редактировать сотрудника';
+  if (isEdit.value) return 'Изменить сотрудника';
   if (isView.value) return 'Просмотр сотрудника';
   return 'Добавить сотрудника';
 });

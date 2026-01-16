@@ -32,7 +32,7 @@ const getTypeClass = (type: Sklad['type']) => {
 };
 
 const headers = [
-  { key: 'name', label: 'Имя', align: 'center' as const },
+  { key: 'name', label: 'Название', align: 'center' as const },
   { key: 'point', label: 'Точка', align: 'center' as const },
   { key: 'type', label: 'Тип', align: 'center' as const },
   { key: 'createdAt', label: 'Дата создания', align: 'center' as const },

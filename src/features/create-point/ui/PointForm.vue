@@ -29,7 +29,7 @@ const existingImages = ref<string[]>([]);
 const isReadOnly = computed(() => props.mode === 'view');
 const pageTitle = computed(() => {
   switch (props.mode) {
-    case 'edit': return 'Редактировать';
+    case 'edit': return 'Изменить';
     case 'view': return 'Просмотр';
     case 'map': return 'Карта';
     default: return 'Добавить';
@@ -38,7 +38,7 @@ const pageTitle = computed(() => {
 
 const breadcrumbTitle = computed(() => {
   switch (props.mode) {
-    case 'edit': return 'Редактировать точку';
+    case 'edit': return 'Изменить точку';
     case 'view': return 'Просмотр точки';
     case 'map': return 'Карта';
     default: return 'Добавить точку';

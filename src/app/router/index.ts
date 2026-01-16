@@ -61,23 +61,6 @@ const routes = [
     }
   },
   {
-    path: '/sklad/add',
-    name: 'sklad-add',
-    component: () => import('@/pages/add-sklad').then(m => m.AddSkladPage),
-  },
-  {
-    path: '/sklad/edit/:id',
-    name: 'sklad-edit',
-    component: () => import('@/pages/add-sklad').then(m => m.AddSkladPage),
-    props: (route: any) => ({ id: route.params.id, mode: 'edit' }),
-  },
-  {
-    path: '/sklad/view/:id',
-    name: 'sklad-view',
-    component: () => import('@/pages/add-sklad').then(m => m.AddSkladPage),
-    props: (route: any) => ({ id: route.params.id, mode: 'view' }),
-  },
-  {
     path: '/nomenclature',
     name: 'nomenclature',
     component: () => import('@/pages/nomenclature').then(m => m.NomenclaturePage),

@@ -64,7 +64,7 @@ import { computed } from 'vue';
         :id="inputId"
         :value="modelValue"
         @change="e => emit('update:modelValue', (e.target as HTMLSelectElement).value)"
-        class="w-full h-9 pl-3 pr-10 bg-white border border-[#C6D6E8] rounded-[6px] appearance-none outline-none focus:border-[#1B3E69] focus:ring-1 focus:ring-[#1B3E69] text-[#1B3E69] text-sm font-medium cursor-pointer transition-all"
+        class="w-full h-[46px] pl-4 pr-10 bg-white border border-[#C6D6E8] rounded-[10px] appearance-none outline-none focus:border-[#1B3E69] focus:ring-1 focus:ring-[#1B3E69] text-[#1B3E69] text-sm font-medium cursor-pointer transition-all"
         :class="{ 
           'text-[#9AA6AC]': !modelValue,
           'border-red-500': error 

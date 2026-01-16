@@ -41,7 +41,7 @@ const errors = reactive({
 
 const title = computed(() => {
   if (props.mode === 'view') return 'Просмотр';
-  if (props.mode === 'edit') return 'Редактировать';
+  if (props.mode === 'edit') return 'Изменить';
   return 'Добавить';
 });
 

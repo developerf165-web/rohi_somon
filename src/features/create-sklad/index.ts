@@ -1,1 +1,2 @@
-export { default as SkladForm } from './ui/SkladForm.vue';
+export { default as SkladModal } from './ui/SkladModal.vue';
+export { default as DeleteSkladModal } from './ui/DeleteSkladModal.vue';

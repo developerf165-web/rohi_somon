@@ -146,7 +146,7 @@ const removeFile = (index: number) => {
       {{ label }}
     </label>
     
-    <div class="bg-white border border-[#C6D6E8] rounded-[6px] flex overflow-hidden min-h-[100px] flex-1" :class="{ 'bg-gray-50': disabled }">
+    <div class="bg-white border border-[#C6D6E8] rounded-[10px] flex overflow-hidden min-h-[100px] flex-1" :class="{ 'bg-gray-50': disabled }">
       <!-- Left: Upload Trigger -->
       <label class="w-[180px] flex flex-col items-center justify-center transition-colors shrink-0 relative py-2" :class="disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:bg-slate-50/50'">
         <input 

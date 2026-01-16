@@ -1,18 +1,22 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
 import DashboardLayout from '@/app/layouts/DashboardLayout.vue';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import DeleteSkladModal from '@/features/create-sklad/ui/DeleteSkladModal.vue';
+import SkladModal from '@/features/create-sklad/ui/SkladModal.vue';
 import { useSkladStore } from '@/entities/Sklad';
 import { SkladTable } from '@/widgets/SkladTable';
 import { AppPagination } from '@/shared/ui/AppPagination';
 
-const router = useRouter();
 const skladStore = useSkladStore();
 
 const isDeleteModalOpen = ref(false);
 const skladToDeleteId = ref<number | string | null>(null);
+
+// Sklad Modal State
+const isSkladModalOpen = ref(false);
+const skladModalMode = ref<'create' | 'view' | 'edit'>('create');
+const selectedSklad = ref<any>(null);
 
 const fetch = () => skladStore.fetchSklads();
 
@@ -36,15 +40,27 @@ onMounted(() => {
 });
 
 const onAdd = () => {
-    router.push('/sklad/add');
+    skladModalMode.value = 'create';
+    selectedSklad.value = null;
+    isSkladModalOpen.value = true;
 };
 
 const onView = (id: string | number) => {
-    router.push(`/sklad/view/${id}`);
+    const item = skladStore.items.find(i => i.id == id);
+    if (item) {
+        selectedSklad.value = item;
+        skladModalMode.value = 'view';
+        isSkladModalOpen.value = true;
+    }
 };
 
 const onEdit = (id: string | number) => {
-    router.push(`/sklad/edit/${id}`);
+    const item = skladStore.items.find(i => i.id == id);
+    if (item) {
+        selectedSklad.value = item;
+        skladModalMode.value = 'edit';
+        isSkladModalOpen.value = true;
+    }
 };
 
 const onDelete = (id: string | number) => {
@@ -93,6 +109,16 @@ const confirmDelete = async () => {
         :show="isDeleteModalOpen"
         @close="isDeleteModalOpen = false"
         @confirm="confirmDelete"
+      />
+
+      <!-- Sklad Manage Modal -->
+      <SkladModal
+        :show="isSkladModalOpen"
+        :mode="skladModalMode"
+        :initial-data="selectedSklad"
+        @close="isSkladModalOpen = false"
+        @saved="fetch"
+        @edit="skladModalMode = 'edit'"
       />
     </div>
   </DashboardLayout>
