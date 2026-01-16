@@ -7,6 +7,7 @@ export interface Kadr {
   cv: string;
   role: 'admin' | 'worker' | 'saler' | 'manager';
   gender: 'мужчина' | 'женщина';
+  phone: string;
   cvUrl?: string;
 }
 

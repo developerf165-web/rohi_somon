@@ -81,7 +81,7 @@ const onSubmit = handleSubmit(async (values) => {
     userStore.setAuth(response.user, response.token);
     
     // Success redirect
-    await router.push('/');
+    await router.push('/points');
   } catch (error: any) {
     const appError = handleApiError(error);
     serverError.value = appError.message;

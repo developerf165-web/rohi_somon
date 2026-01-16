@@ -36,6 +36,7 @@ const {
     birthDate: '',
     role: '',
     gender: '',
+    phone: '',
     startDate: '', 
     comment: '',
   }
@@ -75,6 +76,7 @@ const validate = () => {
     // Basic validation implementation
     if (!form.value.name) return false;
     if (!form.value.position) return false;
+    if (!form.value.phone) return false;
     return true;
 };
 
@@ -135,6 +137,13 @@ const onSave = async () => {
             v-model="form.startDate" 
             label="Дата начала работы *" 
             placeholder="дд.мм.гггг"
+            :disabled="isView"
+          />
+
+          <AppInput 
+            v-model="form.phone" 
+            label="Номер телефон *" 
+            placeholder="+992..."
             :disabled="isView"
           />
         </div>

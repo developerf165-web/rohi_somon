@@ -19,7 +19,7 @@ const router = useRouter();
 const route = useRoute();
 
 const menuItems = [
-  { id: 'points', label: 'Точки', icon: MapPin, path: '/' },
+  { id: 'points', label: 'Точки', icon: MapPin, path: '/points' },
   { id: 'arrival', label: 'Приход', icon: ArrowRightLeft, path: '/arrival' },
   { id: 'expense', label: 'Расход', icon: ArrowRightLeft, path: '/expense' },
   { id: 'cashbox', label: 'Касса', icon: Banknote, path: '/cashbox' },

@@ -3,12 +3,15 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { KadrTable } from '@/widgets/KadrTable';
 import { KadrFilterDrawer } from '@/features/KadrFilter';
+import DeleteKadrModal from '@/features/DeleteKadr/ui/DeleteKadrModal.vue';
 import { useKadrStore } from '@/entities/Kadr';
 import { EntityListLayout } from '@/shared/ui/layouts';
 
 const router = useRouter();
 const kadrStore = useKadrStore();
 const isFilterModalOpen = ref(false);
+const isDeleteModalOpen = ref(false);
+const itemToDeleteId = ref<number | string | null>(null);
 
 onMounted(() => {
   kadrStore.fetchEmployees();
@@ -32,7 +35,7 @@ const onResetFilters = () => {
 };
 
 const onView = (id: number | string) => {
-  console.log('View', id);
+  router.push(`/kadr/view/${id}`);
 };
 
 const onEdit = (id: number | string) => {
@@ -40,8 +43,15 @@ const onEdit = (id: number | string) => {
 };
 
 const onDelete = (id: number | string) => {
-  if (confirm('Вы уверены, что хотите удалить этого сотрудника?')) {
-    kadrStore.removeEmployee(id);
+  itemToDeleteId.value = id;
+  isDeleteModalOpen.value = true;
+};
+
+const confirmDelete = async () => {
+  if (itemToDeleteId.value) {
+    await kadrStore.deleteItem(itemToDeleteId.value);
+    isDeleteModalOpen.value = false;
+    itemToDeleteId.value = null;
   }
 };
 </script>
@@ -78,6 +88,12 @@ const onDelete = (id: number | string) => {
             @close="isFilterModalOpen = false"
             @apply="onApplyFilters"
             @reset="onResetFilters"
+         />
+         <DeleteKadrModal
+            :show="isDeleteModalOpen"
+            :is-loading="kadrStore.isLoading"
+            @close="isDeleteModalOpen = false"
+            @confirm="confirmDelete"
          />
       </template>
   </EntityListLayout>

@@ -75,7 +75,8 @@ export const useKadrStore = defineStore('kadr', () => {
               cv: 'view',
               cvUrl: 'https://example.com/cv.pdf',
               role: 'worker',
-              gender: 'женщина'
+              gender: 'женщина',
+              phone: '+992987654321',
             },
             {
               id: 2,
@@ -85,7 +86,8 @@ export const useKadrStore = defineStore('kadr', () => {
               birthDate: '15.05.1990',
               cv: 'view',
               role: 'manager',
-              gender: 'мужчина'
+              gender: 'мужчина',
+              phone: '+992987654322',
             },
             {
               id: 3,
@@ -97,6 +99,7 @@ export const useKadrStore = defineStore('kadr', () => {
               cvUrl: 'https://example.com/cv2.pdf',
               role: 'saler',
               gender: 'мужчина',
+              phone: '+992987654323',
             },
             {
               id: 4,
@@ -107,6 +110,7 @@ export const useKadrStore = defineStore('kadr', () => {
               cv: 'view',
               role: 'saler',
               gender: 'мужчина',
+              phone: '+992987654324',
             },
             {
               id: 5,
@@ -118,6 +122,7 @@ export const useKadrStore = defineStore('kadr', () => {
               cvUrl: 'https://example.com/cv3.pdf',
               role: 'manager',
               gender: 'женщина',
+              phone: '+992987654325',
             },
             {
               id: 6,
@@ -128,6 +133,7 @@ export const useKadrStore = defineStore('kadr', () => {
               cv: 'view',
               role: 'worker',
               gender: 'мужчина',
+              phone: '+992987654326',
             },
             {
               id: 7,
@@ -137,7 +143,8 @@ export const useKadrStore = defineStore('kadr', () => {
               birthDate: '30.11.1988',
               cv: 'view',
               role: 'admin',
-              gender: 'мужчина'
+              gender: 'мужчина',
+              phone: '+992987654327',
             }
           ];
       }
@@ -189,9 +196,22 @@ export const useKadrStore = defineStore('kadr', () => {
   const fetchItems = fetchEmployees;
   const items = employees;
 
-  const removeEmployee = (id: number | string) => {
-    employees.value = employees.value.filter(emp => emp.id !== id);
+  const deleteItem = async (id: number | string) => {
+    isLoading.value = true;
+    try {
+      // Mock API call
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      employees.value = employees.value.filter(emp => emp.id !== id);
+      return true;
+    } catch (e: any) {
+      error.value = 'Failed to delete employee';
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
   };
+
+  const removeEmployee = deleteItem;
 
   const resetFilters = () => {
     filters.value = {
@@ -216,5 +236,6 @@ export const useKadrStore = defineStore('kadr', () => {
     updateItem,
     fetchItems,
     items,
+    deleteItem,
   };
 });

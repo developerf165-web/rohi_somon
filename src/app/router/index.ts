@@ -6,6 +6,10 @@ import LoginPage from '@/pages/login/LoginPage.vue';
 const routes = [
   {
     path: '/',
+    redirect: '/points',
+  },
+  {
+    path: '/points',
     name: 'home',
     component: HomePage,
   },
@@ -129,7 +133,13 @@ const routes = [
     path: '/kadr/edit/:id',
     name: 'kadr-edit',
     component: () => import('@/pages/kadr/AddKadrPage.vue'),
-    props: true,
+    props: (route: any) => ({ id: route.params.id, mode: 'edit' }),
+  },
+  {
+    path: '/kadr/view/:id',
+    name: 'kadr-view',
+    component: () => import('@/pages/kadr/AddKadrPage.vue'),
+    props: (route: any) => ({ id: route.params.id, mode: 'view' }),
   },
   {
     path: '/suppliers',

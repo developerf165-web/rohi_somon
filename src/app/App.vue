@@ -8,10 +8,10 @@ const { initTheme } = useTheme()
 
 onMounted(() => {
   initTheme()
-  // Hide splash screen after 2 seconds
+  // Hide splash screen after 0.5 seconds for faster experience
   setTimeout(() => {
     showSplash.value = false
-  }, 2000)
+  }, 500)
 })
 </script>
 
