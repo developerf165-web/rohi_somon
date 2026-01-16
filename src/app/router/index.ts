@@ -130,23 +130,6 @@ const routes = [
     component: () => import('@/pages/suppliers').then(m => m.default),
   },
   {
-    path: '/suppliers/add',
-    name: 'suppliers-add',
-    component: () => import('@/pages/add-supplier').then(m => m.AddSupplierPage),
-  },
-  {
-    path: '/suppliers/edit/:id',
-    name: 'suppliers-edit',
-    component: () => import('@/pages/add-supplier').then(m => m.AddSupplierPage),
-    props: (route: any) => ({ id: route.params.id, mode: 'edit' }),
-  },
-  {
-    path: '/suppliers/view/:id',
-    name: 'suppliers-view',
-    component: () => import('@/pages/add-supplier').then(m => m.AddSupplierPage),
-    props: (route: any) => ({ id: route.params.id, mode: 'view' }),
-  },
-  {
     path: '/arrival',
     name: 'arrival',
     component: () => import('@/pages/arrival/ui/ArrivalPage.vue'),

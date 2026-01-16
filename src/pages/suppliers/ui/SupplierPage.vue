@@ -12,7 +12,7 @@ import SupplierGrid from '@/widgets/SupplierGrid/ui/SupplierGrid.vue';
 import { useSupplierStore } from '@/entities/Supplier/model/store';
 import { EntityListLayout } from '@/shared/ui/layouts';
 import DeleteSupplierModal from '@/features/delete-supplier/ui/DeleteSupplierModal.vue';
-import CreateSupplierModal from '@/features/create-supplier/ui/CreateSupplierModal.vue';
+import SupplierModal from '@/features/create-supplier/ui/SupplierModal.vue';
 import type { Supplier } from '@/entities/Supplier/model/types';
 
 const store = useSupplierStore();
@@ -99,7 +99,7 @@ const handleDeleteConfirm = async () => {
         @confirm="handleDeleteConfirm"
       />
 
-      <CreateSupplierModal
+      <SupplierModal
         :show="isFormModalOpen"
         :mode="formModalMode"
         :initial-data="selectedSupplier"

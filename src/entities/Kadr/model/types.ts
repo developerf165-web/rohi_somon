@@ -8,6 +8,8 @@ export interface Kadr {
   role: 'admin' | 'worker' | 'saler' | 'manager';
   gender: 'мужчина' | 'женщина';
   phone: string;
+  login?: string;
+  password?: string;
   cvUrl?: string;
 }
 

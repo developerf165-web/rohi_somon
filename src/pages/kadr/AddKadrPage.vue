@@ -38,6 +38,8 @@ const {
     gender: '',
     phone: '',
     startDate: '', 
+    login: '',
+    password: '',
     comment: '',
   }
 });
@@ -77,6 +79,8 @@ const validate = () => {
     if (!form.value.name) return false;
     if (!form.value.position) return false;
     if (!form.value.phone) return false;
+    if (!form.value.login) return false;
+    if (!form.value.password) return false;
     return true;
 };
 
@@ -93,12 +97,13 @@ const onSave = async () => {
     :loading="store.isLoading"
   >
       <div class="space-y-8">
-        <!-- Main Form Grid -->
+        <!-- Main Form Grid (3 columns matching Figma) -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
+          <!-- Row 1 -->
           <AppInput 
             v-model="form.name" 
             label="ФИО *" 
-            placeholder="ФИО сотрудника"
+            placeholder="Шахобов Нуриддин Фаррухович"
             :disabled="isView"
           />
           
@@ -117,6 +122,7 @@ const onSave = async () => {
             :disabled="isView"
           />
 
+          <!-- Row 2 -->
           <AppSelect 
             v-model="form.role"
             :options="roles"
@@ -129,7 +135,7 @@ const onSave = async () => {
             v-model="form.gender"
             :options="genders"
             label="Пол *"
-            placeholder="Выберите пол"
+            placeholder="Выберите роль"
             :disabled="isView"
           />
 
@@ -140,10 +146,26 @@ const onSave = async () => {
             :disabled="isView"
           />
 
+          <!-- Row 3 -->
           <AppInput 
             v-model="form.phone" 
-            label="Номер телефон *" 
-            placeholder="+992..."
+            label="Номер телефона" 
+            placeholder="Введите номер телефона"
+            :disabled="isView"
+          />
+
+          <AppInput 
+            v-model="form.login" 
+            label="Логин *" 
+            placeholder="Введите логин"
+            :disabled="isView"
+          />
+
+          <AppInput 
+            v-model="form.password" 
+            label="Пароль *" 
+            type="password"
+            placeholder="Введите пароль"
             :disabled="isView"
           />
         </div>
