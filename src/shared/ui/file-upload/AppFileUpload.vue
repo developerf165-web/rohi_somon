@@ -112,13 +112,13 @@ const triggerPicker = () => {
 </script>
 
 <template>
-  <div class="flex flex-col w-full" :class="label ? 'space-y-1' : ''">
+  <div class="flex flex-col w-full h-full" :class="label ? 'space-y-1' : ''">
     <!-- Shared Label Logic -->
     <label v-if="label" class="text-[16px] font-bold text-[#1B3E69] leading-none mb-1">
       {{ label }}
     </label>
 
-    <div class="relative w-full">
+    <div class="relative w-full flex-1 flex flex-col min-h-0">
       <input 
         type="file" 
         ref="fileInput"
@@ -185,7 +185,7 @@ const triggerPicker = () => {
       <!-- 3. Default Variant (Card style for Points) -->
       <div 
         v-else 
-        class="bg-white border border-[#C6D6E8] rounded-[10px] flex overflow-hidden min-h-[100px] flex-1" 
+        class="bg-white border border-[#C6D6E8] rounded-[10px] flex overflow-hidden min-h-[100px] flex-1 h-full" 
         :class="{ 'bg-gray-50': disabled }"
       >
         <label 

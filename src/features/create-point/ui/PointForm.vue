@@ -158,10 +158,10 @@ const handleSave = async () => {
 
       <!-- Files and Comments Row -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <div class="lg:col-span-8 flex flex-col gap-1">
+        <div class="lg:col-span-8 flex flex-col gap-1 h-[150px]">
           <label class="text-[16px] font-bold text-[#1B3E69]">Фото</label>
           <AppFileUpload 
-            class="h-[150px]" 
+            class="flex-1" 
             :disabled="isReadOnly" 
             :existing-files="existingImages"
             :max-files="10"
@@ -169,12 +169,12 @@ const handleSave = async () => {
             @update:data-urls="(urls) => form.images = urls"
           />
         </div>
-        <div class="lg:col-span-4 flex flex-col gap-1">
+        <div class="lg:col-span-4 flex flex-col gap-1 h-[150px]">
           <label class="text-[16px] font-bold text-[#1B3E69]">Комментария</label>
           <AppTextarea
             v-model="form.comment"
             placeholder="Напишите что-нибудь..."
-            class="h-[150px]"
+            class="flex-1"
             :disabled="isReadOnly"
           />
         </div>

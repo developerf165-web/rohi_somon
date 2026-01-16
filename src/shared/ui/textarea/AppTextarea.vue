@@ -49,7 +49,7 @@ const onInput = (event: Event) => {
 </script>
 
 <template>
-  <div class="w-full flex flex-col" :class="label ? 'space-y-1' : ''">
+  <div class="w-full flex flex-col h-full" :class="label ? 'space-y-1' : ''">
     <label 
       v-if="formattedLabel" 
       :for="inputId"
@@ -66,7 +66,7 @@ const onInput = (event: Event) => {
       :disabled="disabled"
       :rows="rows"
       :class="classes"
-      class="flex-1"
+      class="flex-1 min-h-0"
     ></textarea>
     <span v-if="error" class="text-xs font-medium text-red-500">
       {{ error }}
