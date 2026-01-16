@@ -27,7 +27,10 @@ export const useExpenseStore = defineStore('expense', {
             toSkladId: 2,   // н.Ашт
             totalPrice: 5300.79,
             docNumber: '3',
-            items: []
+            items: [
+              { id: 101, productId: 1, productName: 'Топливо АИ-92', unit: 'л', quantity: 1000, price: 5.3, totalPrice: 5300 },
+              { id: 102, productId: 2, productName: 'Масло моторное', unit: 'шт', quantity: 1, price: 0.79, totalPrice: 0.79 }
+            ]
           },
           {
             id: 2,
@@ -36,7 +39,9 @@ export const useExpenseStore = defineStore('expense', {
             toSkladId: 1,
             totalPrice: 2500,
             docNumber: '1',
-            items: []
+            items: [
+              { id: 201, productId: 3, productName: 'Дизельное топливо', unit: 'л', quantity: 500, price: 5, totalPrice: 2500 }
+            ]
           },
           {
             id: 3,
@@ -45,7 +50,9 @@ export const useExpenseStore = defineStore('expense', {
             toSkladId: 3, // ш. Бустон
             totalPrice: 25300.01,
             docNumber: '2',
-            items: []
+            items: [
+              { id: 301, productId: 1, productName: 'Топливо АИ-92', unit: 'л', quantity: 4000, price: 5, totalPrice: 20000 }
+            ]
           },
           {
             id: 4,
@@ -101,6 +108,7 @@ export const useExpenseStore = defineStore('expense', {
     async createExpense(expense: Omit<Expense, 'id'>) {
       this.isLoading = true;
       try {
+        await new Promise(resolve => setTimeout(resolve, 500));
         const newExpense = { ...expense, id: Math.random().toString(36).substr(2, 9) } as Expense;
         this.items.unshift(newExpense);
         return true;
@@ -115,6 +123,7 @@ export const useExpenseStore = defineStore('expense', {
     async updateExpense(id: number | string, expense: Partial<Expense>) {
       this.isLoading = true;
       try {
+        await new Promise(resolve => setTimeout(resolve, 500));
         const index = this.items.findIndex(item => item.id == id);
         const item = this.items[index];
         if (index !== -1 && item) {
@@ -132,6 +141,7 @@ export const useExpenseStore = defineStore('expense', {
     async deleteExpense(id: number | string) {
       this.isLoading = true;
       try {
+        await new Promise(resolve => setTimeout(resolve, 500));
         this.items = this.items.filter(item => item.id != id);
         return true;
       } catch (err: any) {
@@ -140,6 +150,17 @@ export const useExpenseStore = defineStore('expense', {
       } finally {
         this.isLoading = false;
       }
+    },
+
+    // Standardized aliases
+    async createItem(payload: any) {
+      return this.createExpense(payload);
+    },
+    async updateItem(id: string | number, payload: any) {
+      return this.updateExpense(id, payload);
+    },
+    async fetchItems() {
+        return this.fetchExpenses();
     }
   }
 });

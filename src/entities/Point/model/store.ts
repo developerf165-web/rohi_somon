@@ -31,15 +31,31 @@ export const usePointStore = defineStore('point', {
       }
     },
 
-    async createPoint() {
+    async createPoint(pointData: any) {
       this.isLoading = true;
       try {
-        const newPoint = await pointsApi.createPoint(this.createForm);
+        const newPoint = await pointsApi.createPoint(pointData);
         this.points.push(newPoint);
-        this.resetForm();
         return true;
       } catch (err: any) {
         this.error = err.message || 'Failed to create point';
+        return false;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async updatePointById(id: number | string, pointData: Partial<Point>) {
+      this.isLoading = true;
+      try {
+        const updatedPoint = await pointsApi.updatePoint(id, pointData);
+        const index = this.points.findIndex(p => p.id == id);
+        if (index !== -1) {
+          this.points[index] = { ...this.points[index], ...updatedPoint };
+        }
+        return true;
+      } catch (err: any) {
+        this.error = err.message || 'Failed to update point';
         return false;
       } finally {
         this.isLoading = false;
@@ -70,6 +86,17 @@ export const usePointStore = defineStore('point', {
       if (index !== -1) {
         this.points[index] = updatedPoint;
       }
+    },
+
+    // Standardized aliases for useEntityForm compatibility
+    async createItem(payload: any) {
+      return this.createPoint(payload);
+    },
+    async updateItem(id: string | number, payload: any) {
+      return this.updatePointById(id, payload);
+    },
+    async fetchItems() {
+      return this.fetchPoints();
     }
   },
 });

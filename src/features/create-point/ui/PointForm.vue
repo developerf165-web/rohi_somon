@@ -21,10 +21,9 @@ const props = withDefaults(defineProps<Props>(), {
   mode: 'add',
 });
 
-const { form, isLoading, errors, onSave, onCancel } = usePointForm();
+const { form, isLoading, errors, onSave, onCancel } = usePointForm({ id: props.id, mode: props.mode });
 const pointStore = usePointStore();
 const isMapModalOpen = ref(false);
-const existingImages = ref<string[]>([]);
 
 const isReadOnly = computed(() => props.mode === 'view');
 const pageTitle = computed(() => {
@@ -47,63 +46,25 @@ const breadcrumbTitle = computed(() => {
 
 const handleCoordsSelect = (coords: { lat: number; lng: number }) => {
   if (isReadOnly.value) return;
-  form.lat = coords.lat.toFixed(6);
-  form.lng = coords.lng.toFixed(6);
+  form.value.lat = coords.lat.toFixed(6);
+  form.value.lng = coords.lng.toFixed(6);
 };
 
 const combinedCoords = computed({
   get: () => {
-    if (!form.lat || !form.lng) return '';
-    return `${form.lng}, ${form.lat}`;
+    if (!form.value.lat || !form.value.lng) return '';
+    return `${form.value.lng}, ${form.value.lat}`;
   },
   set: () => {
     // This is mostly for display/reset, we use map picker for setting
   }
 });
 
-
-
-const loadData = async () => {
-  if (!props.id) return;
-  
-  let point = pointStore.points.find(p => p.id == props.id);
-  
-  if (!point) {
-    await pointStore.fetchPoints();
-    point = pointStore.points.find(p => p.id == props.id);
-  }
-
-  if (point) {
-    form.title = point.title;
-    form.address = point.address || '';
-    form.lat = point.lat || MAP_CONFIG.DEFAULT_CENTER[0].toString(); 
-    form.lng = point.lng || MAP_CONFIG.DEFAULT_CENTER[1].toString();
-    form.comment = point.comment || '';
-    existingImages.value = point.images || (point.image ? [point.image] : []);
-  }
-};
-
 onMounted(() => {
-  if (props.mode !== 'add') {
-    loadData();
-    if (props.mode === 'map') {
-      isMapModalOpen.value = true;
-    }
+  if (props.mode === 'map') {
+    isMapModalOpen.value = true;
   }
 });
-
-// Update save handler for edit mode
-const handleSave = async () => {
-  if (props.mode === 'edit') {
-    // Logic to update point would go here
-    // pointStore.updatePoint({...form, id: props.id});
-    // For now we reuse onSave which creates a new one, but ideally we'd separate it.
-    // Since API is mock, let's just create (or simulate update) then go back.
-    await onSave(); 
-  } else {
-    await onSave();
-  }
-};
 </script>
 
 <template>
@@ -119,7 +80,7 @@ const handleSave = async () => {
       <!-- Main Inputs Grid -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <AppInput
-          v-model="form.title"
+          v-model="form.value.title"
           label="Названия *"
           placeholder="Введите название"
           :error="errors.title"
@@ -148,7 +109,7 @@ const handleSave = async () => {
         </AppInput>
 
         <AppInput
-          v-model="form.address"
+          v-model="form.value.address"
           label="Адрес *"
           placeholder="Введите адрес"
           :error="errors.address"
@@ -163,16 +124,16 @@ const handleSave = async () => {
           <AppFileUpload 
             class="flex-1" 
             :disabled="isReadOnly" 
-            :existing-files="existingImages"
+            :existing-files="form.value.images"
             :max-files="10"
             accept="image/*"
-            @update:data-urls="(urls) => form.images = urls"
+            @update:data-urls="(urls) => form.value.images = urls"
           />
         </div>
         <div class="lg:col-span-4 flex flex-col gap-1 h-[150px]">
           <label class="text-[16px] font-bold text-[#1B3E69]">Комментария</label>
           <AppTextarea
-            v-model="form.comment"
+            v-model="form.value.comment"
             placeholder="Напишите что-нибудь..."
             class="flex-1"
             :disabled="isReadOnly"
@@ -183,7 +144,7 @@ const handleSave = async () => {
       <!-- Actions -->
       <FormActions 
         :is-loading="isLoading" 
-        @save="handleSave" 
+        @save="onSave" 
         @cancel="onCancel" 
         :hide-save="isReadOnly"
       />
@@ -201,8 +162,8 @@ const handleSave = async () => {
         </button>
       </div>
       <PointMap
-        :lat="form.lat"
-        :lng="form.lng"
+        :lat="form.value.lat"
+        :lng="form.value.lng"
         :readonly="true"
       />
     </div>
@@ -210,8 +171,8 @@ const handleSave = async () => {
     <!-- Map Modal for Picker -->
     <MapPickerModal
       :show="isMapModalOpen"
-      :initial-lat="form.lat"
-      :initial-lng="form.lng"
+      :initial-lat="form.value.lat"
+      :initial-lng="form.value.lng"
       @close="isMapModalOpen = false"
       @select="handleCoordsSelect"
       :readonly="false" 

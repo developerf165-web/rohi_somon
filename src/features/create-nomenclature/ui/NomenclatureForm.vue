@@ -8,6 +8,8 @@ import { useNomenclatureStore } from '@/entities/Nomenclature';
 import EntityFormLayout from '@/shared/ui/layouts/EntityFormLayout.vue';
 import { useEntityForm } from '@/shared/composables/useEntityForm';
 
+import { NOMENCLATURE_TYPES, UNIT_OPTIONS } from '@/shared/constants/nomenclature';
+
 interface Props {
   id?: string | number;
   mode?: 'add' | 'edit' | 'view';
@@ -42,17 +44,8 @@ const {
   }
 });
 
-const typeOptions = [
-    { label: 'Продукт', value: 'Продукт' },
-    { label: 'Топливо', value: 'Топливо' }
-];
-
-const unitOptions = [
-    { label: 'кг', value: 'кг' },
-    { label: 'литр', value: 'литр' },
-    { label: 'шт', value: 'шт' },
-    { label: 'м³', value: 'м³' }
-];
+const typeOptions = NOMENCLATURE_TYPES;
+const unitOptions = UNIT_OPTIONS;
 
 const pageTitle = computed(() => {
   switch (props.mode) {
@@ -71,11 +64,6 @@ const validate = () => {
     isValid = false;
   }
   
-  if (!form.value.unit) {
-    errors.value.unit = 'Введите ед. изм.';
-    isValid = false;
-  }
-
   if (!form.value.unit) {
     errors.value.unit = 'Введите ед. изм.';
     isValid = false;

@@ -1,7 +1,8 @@
 import { useRouter } from 'vue-router';
 import { usePointStore } from '@/entities/Point';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { z } from 'zod';
+import { MAP_CONFIG } from '@/shared/config/map';
 
 const pointSchema = z.object({
   title: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
@@ -9,16 +10,60 @@ const pointSchema = z.object({
   lat: z.string().min(1, 'Укажите широту'),
   lng: z.string().min(1, 'Укажите долготу'),
   comment: z.string().optional(),
+  images: z.array(z.string()).optional(),
 });
 
-export function usePointForm() {
+interface UsePointFormOptions {
+  id?: string | number;
+  mode?: 'add' | 'edit' | 'view';
+}
+
+export function usePointForm(options: UsePointFormOptions = {}) {
+  const { id, mode = 'add' } = options;
   const router = useRouter();
   const pointStore = usePointStore();
   const errors = ref<Record<string, string>>({});
+  
+  const form = ref({
+    title: '',
+    address: '',
+    lat: MAP_CONFIG.DEFAULT_CENTER[0].toString(),
+    lng: MAP_CONFIG.DEFAULT_CENTER[1].toString(),
+    comment: '',
+    images: [] as string[],
+  });
+
+  const loadData = async () => {
+    if (!id || mode === 'add') return;
+    
+    let point = pointStore.points.find(p => p.id == id);
+    
+    if (!point) {
+      await pointStore.fetchPoints();
+      point = pointStore.points.find(p => p.id == id);
+    }
+
+    if (point) {
+      form.value = {
+        title: point.title,
+        address: point.address || '',
+        lat: point.lat || MAP_CONFIG.DEFAULT_CENTER[0].toString(),
+        lng: point.lng || MAP_CONFIG.DEFAULT_CENTER[1].toString(),
+        comment: point.comment || '',
+        images: point.images || (point.image ? [point.image] : []),
+      };
+    }
+  };
+
+  onMounted(() => {
+    if (mode !== 'add') {
+      loadData();
+    }
+  });
 
   const validate = () => {
     errors.value = {};
-    const result = pointSchema.safeParse(pointStore.createForm);
+    const result = pointSchema.safeParse(form.value);
     if (!result.success) {
       result.error.issues.forEach((issue) => {
         const field = issue.path[0];
@@ -34,22 +79,29 @@ export function usePointForm() {
   const onSave = async () => {
     if (!validate()) return;
     
-    const success = await pointStore.createPoint();
+    let success = false;
+    
+    if (mode === 'edit' && id) {
+      success = await pointStore.updatePointById(id, form.value);
+    } else {
+      success = await pointStore.createPoint(form.value);
+    }
+    
     if (success) {
-      router.push('/');
+      router.push('/points');
     }
   };
 
   const onCancel = () => {
-    pointStore.resetForm();
-    router.push('/');
+    router.push('/points');
   };
 
   return {
-    form: pointStore.createForm,
+    form,
     isLoading: pointStore.isLoading,
     errors,
     onSave,
     onCancel,
+    loadData,
   };
 }

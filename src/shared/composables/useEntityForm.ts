@@ -85,8 +85,8 @@ export function useEntityForm<T extends Record<string, any>>(options: UseEntityF
         const payload = payloadOverride || form.value;
 
         // Determine create/update methods
-        const createMethod = store.createItem || store.createSklad; // Add others as needed
-        const updateMethod = store.updateItem || store.updateSklad; // Add others as needed
+        const createMethod = store.createItem || store.createSklad || store.createArrival || store.createExpense;
+        const updateMethod = store.updateItem || store.updateSklad || store.updateArrival || store.updateExpense;
 
         if (isAdd.value) {
             if (createMethod) {
