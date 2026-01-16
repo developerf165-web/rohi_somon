@@ -64,8 +64,7 @@ const pointOptions = computed(() => {
 const buttonText = computed(() => {
     switch (props.mode) {
         case 'create': return 'Добавить';
-        case 'view': return 'Изменить';
-        case 'edit': return 'Изменить';
+        case 'edit': return 'Сохранить';
         default: return 'Добавить';
     }
 });
@@ -115,11 +114,6 @@ const validate = () => {
 };
 
 const onSave = async () => {
-  if (props.mode === 'view') {
-      emit('edit');
-      return;
-  }
-  
   if (!validate()) return;
   
   let success = false;
@@ -191,6 +185,7 @@ const onSave = async () => {
           {{ mode === 'view' ? 'Назад' : 'Отмена' }}
         </AppButton>
         <AppButton 
+          v-if="mode !== 'view'"
           variant="primary" 
           class="w-full sm:w-auto h-[46px] bg-[#1B3E69] hover:bg-[#153256] px-8 text-white"
           :loading="skladStore.isLoading"

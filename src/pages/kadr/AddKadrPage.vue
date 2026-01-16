@@ -178,10 +178,11 @@ const onSave = async () => {
             <div class="flex items-stretch bg-white border border-[#DDE2E4] rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.03)] overflow-hidden h-[100px]">
               <div class="flex-1 relative">
                 <AppFileUpload 
-                   variant="minimal"
+                  variant="minimal"
                   type="image" 
                   placeholder="Выберите аватар" 
                   :disabled="isView"
+                  :existing-files="form.photo ? [form.photo] : []"
                   @update:data-urls="(urls) => form.photo = urls[0] || ''"
                 />
                 <!-- Vertical Dotted Separator -->
@@ -193,6 +194,7 @@ const onSave = async () => {
                   type="file" 
                   placeholder="CV - сотрудника" 
                   :disabled="isView"
+                  :existing-files="form.cvUrl ? [form.cvUrl] : []"
                   @update:data-urls="(urls) => form.cvUrl = urls[0] || ''"
                 />
               </div>

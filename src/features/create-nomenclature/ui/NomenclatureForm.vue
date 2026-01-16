@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed } from 'vue';
 import { AppInput } from '@/shared/ui/input';
 import { AppSelect } from '@/shared/ui/select';
+import AppFileUpload from '@/shared/ui/file-upload/AppFileUpload.vue';
 import { FormActions } from '@/shared/ui/form';
 import { useNomenclatureStore } from '@/entities/Nomenclature';
 import EntityFormLayout from '@/shared/ui/layouts/EntityFormLayout.vue';
@@ -97,32 +98,6 @@ const validate = () => {
   return isValid;
 };
 
-const selectedFileName = ref('');
-
-// Watch for initial photo load in edit/view modes
-watch(() => form.value.photo, (newPhoto) => {
-  if (newPhoto && !selectedFileName.value) {
-    if (newPhoto.startsWith('data:')) {
-      selectedFileName.value = 'Фото выбрано';
-    } else {
-      selectedFileName.value = newPhoto.split('/').pop() || '';
-    }
-  }
-}, { immediate: true });
-
-const onFileChange = (e: Event) => {
-  const target = e.target as HTMLInputElement;
-  if (target.files && target.files[0]) {
-    const file = target.files[0];
-    selectedFileName.value = file.name;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      form.value.photo = event.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-  }
-};
-
 const onSave = async () => {
   await handleSave(validate);
 };
@@ -173,28 +148,14 @@ const onSave = async () => {
           :disabled="isReadOnly"
         />
 
-        <div class="w-full space-y-1">
-          <label class="text-[15px] font-bold leading-none text-[#1B3E69]">Фото</label>
-          <div class="relative">
-            <input
-              type="file"
-              ref="fileInput"
-              class="hidden"
-              accept="image/*"
-              @change="onFileChange"
-            />
-            <div
-              @click="!isReadOnly && ($refs.fileInput as any).click()"
-              class="flex h-[46px] w-full rounded-[10px] border border-[#C6D6E8] bg-white px-4 py-2 text-sm items-center cursor-pointer transition-all placeholder:text-[#8DA2C0] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#1B3E69]"
-              :class="{ 'opacity-50 cursor-not-allowed': isReadOnly }"
-            >
-              <span v-if="form.photo" class="text-[#1B3E69] truncate">
-                {{ selectedFileName || (form.photo.startsWith('data:') ? 'Фото выбрано' : (form.photo.includes('/') ? form.photo.split('/').pop() : form.photo)) }}
-              </span>
-              <span v-else class="text-[#8DA2C0]">{{ isReadOnly ? 'Нет фото' : 'Выберите фото' }}</span>
-            </div>
-          </div>
-        </div>
+        <AppFileUpload
+          variant="input"
+          label="Фото"
+          placeholder="Выберите фото"
+          :disabled="isReadOnly"
+          :existing-files="form.photo ? [form.photo] : []"
+          @update:data-urls="(urls: string[]) => form.photo = urls[0] || ''"
+        />
 
         <AppInput
           v-model="form.comment"

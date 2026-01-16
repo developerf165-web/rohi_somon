@@ -4,7 +4,7 @@ import { AppModal } from '@/shared/ui/modal';
 import { AppInput } from '@/shared/ui/input';
 import { AppButton } from '@/shared/ui/button';
 import AppFileUpload from '@/shared/ui/file-upload/AppFileUpload.vue';
-import { useSupplierStore } from '@/entities/Supplier/model/store';
+import { useSupplierStore } from '@/entities/Supplier';
 import type { Supplier } from '@/entities/Supplier/model/types';
 
 interface Props {
@@ -143,16 +143,14 @@ const onSave = async () => {
         />
 
         <!-- Row 2: Фото and Комментарии -->
-        <div class="flex flex-col gap-1">
-          <label class="text-[16px] font-bold text-[#1B3E69]">Фото</label>
-          <AppFileUpload 
-            variant="minimal"
-            :disabled="isReadOnly" 
-            placeholder="Выберите фото"
-            :existing-files="form.photo ? [form.photo] : []"
-            @update:data-urls="(urls: string[]) => form.photo = urls[0] || ''"
-          />
-        </div>
+        <AppFileUpload
+          variant="input"
+          label="Фото"
+          placeholder="Выберите фото"
+          :disabled="isReadOnly"
+          :existing-files="form.photo ? [form.photo] : []"
+          @update:data-urls="(urls: string[]) => form.photo = urls[0] || ''"
+        />
 
         <AppInput
           v-model="form.comment"
