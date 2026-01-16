@@ -19,8 +19,7 @@ export function useTheme() {
     if (savedTheme) {
       updateTheme(savedTheme);
     } else {
-      const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      updateTheme(systemPreference);
+      updateTheme('light');
     }
   };
 

@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import SplashPage from '@/pages/splash/SplashPage.vue'
+import { useTheme } from '@/shared/lib/composables/useTheme'
+
 const showSplash = ref(true)
+const { initTheme } = useTheme()
 
 onMounted(() => {
+  initTheme()
   // Hide splash screen after 2 seconds
   setTimeout(() => {
     showSplash.value = false

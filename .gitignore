@@ -50,3 +50,14 @@ Thumbs.db
 figma_photo/
 logo.md
 figma_info.md
+
+# API Testing
+api_testing/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+test_output*.txt
+
