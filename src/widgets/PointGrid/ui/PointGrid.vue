@@ -6,6 +6,7 @@ interface Point {
   title: string;
   address: string;
   image?: string;
+  images?: string[];
 }
 
 defineProps<{

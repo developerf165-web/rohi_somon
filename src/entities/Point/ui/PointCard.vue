@@ -1,15 +1,35 @@
 <script setup lang="ts">
 import { IconPinLarge } from '@/shared/assets/icons';
 import { Store, MapPin, Eye, Pencil, Trash2 } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 interface Props {
   id: number | string;
   title: string;
   address: string;
   image?: string;
+  images?: string[];
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const displayImage = computed(() => {
+  // If images array is provided (from store/api update), it's the absolute source of truth
+  if (props.images !== undefined) {
+    return props.images.length > 0 ? props.images[0] : null;
+  }
+  
+  // Fallback to legacy singular image prop only if images is undefined
+  return props.image || null;
+});
+
+// Debug log for troubleshooting sync issues
+import { watch } from 'vue';
+watch(() => [props.image, props.images], ([img, imgs]) => {
+  console.log(`[PointCard Debug] ID: ${props.id} Title: ${props.title}`);
+  console.log(` - props.image: ${img ? 'exists' : 'null/empty'}`);
+  console.log(` - props.images: ${imgs ? `count: ${imgs.length}` : 'undefined'}`);
+}, { immediate: true });
 
 const emit = defineEmits<{
   (e: 'view', id: number | string): void;
@@ -24,8 +44,8 @@ const emit = defineEmits<{
     <!-- Image Section -->
     <div class="h-[189px] w-full relative bg-[#E1EAF6] flex items-center justify-center overflow-hidden">
       <img 
-        v-if="image" 
-        :src="image" 
+        v-if="displayImage" 
+        :src="displayImage" 
         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
         alt="Point Image"
       />

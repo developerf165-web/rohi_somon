@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { AppModal } from '@/shared/ui/modal';
 import { AppButton } from '@/shared/ui/button';
+import { MAP_CONFIG } from '@/shared/config/map';
 import PointMap from './PointMap.vue';
 
 interface Props {
@@ -27,15 +28,18 @@ const onCoordsUpdate = (coords: { lat: number; lng: number }) => {
 };
 
 const onSelect = () => {
-  if (props.readonly || !currentCoords.value) {
-    if (props.initialLat && props.initialLng) {
-      // Fallback to initial if nothing moved
-      emit('select', { lat: Number(props.initialLat), lng: Number(props.initialLng) });
-    }
+  if (props.readonly) {
     emit('close');
     return;
   }
-  emit('select', currentCoords.value);
+
+  // Use current selected coords, or fallback to initial props if nothing moved
+  const selectedCoords = currentCoords.value || 
+    (props.initialLat && props.initialLng 
+      ? { lat: Number(props.initialLat), lng: Number(props.initialLng) } 
+      : { lat: MAP_CONFIG.DEFAULT_CENTER[0], lng: MAP_CONFIG.DEFAULT_CENTER[1] });
+
+  emit('select', selectedCoords);
   emit('close');
 };
 </script>

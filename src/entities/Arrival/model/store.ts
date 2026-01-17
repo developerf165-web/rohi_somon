@@ -128,7 +128,20 @@ export const useArrivalStore = defineStore('arrival', {
       this.isLoading = true;
       try {
         await new Promise(resolve => setTimeout(resolve, 500));
-        const newArrival = { ...arrival, id: Math.random().toString(36).substr(2, 9) } as Arrival;
+        
+        // Auto-generate docNumber if not provided
+        let docNumber = arrival.docNumber;
+        if (!docNumber) {
+            const nextNum = Math.max(...MOCK_ARRIVALS.map(a => parseInt(a.docNumber) || 0), 0) + 1;
+            docNumber = nextNum.toString();
+        }
+
+        const newArrival = { 
+            ...arrival, 
+            docNumber,
+            id: Math.random().toString(36).substr(2, 9) 
+        } as Arrival;
+        
         MOCK_ARRIVALS.unshift(newArrival);
         await this.fetchArrivals();
         return true;

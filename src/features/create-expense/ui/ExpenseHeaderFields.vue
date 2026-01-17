@@ -42,7 +42,7 @@ const onToSkladSelect = (sklad: any) => {
     <!-- Date Input -->
     <AppInput
       v-model="form.date"
-      label="Дата поступления *"
+      label="Дата *"
       placeholder="дд.мм.гггг"
       :error="errors.date"
       :disabled="isReadOnly"

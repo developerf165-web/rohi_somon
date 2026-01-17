@@ -1,6 +1,6 @@
 import { useRouter } from 'vue-router';
 import { usePointStore } from '@/entities/Point';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { z } from 'zod';
 import { MAP_CONFIG } from '@/shared/config/map';
 
@@ -15,7 +15,7 @@ const pointSchema = z.object({
 
 interface UsePointFormOptions {
   id?: string | number;
-  mode?: 'add' | 'edit' | 'view';
+  mode?: 'add' | 'edit' | 'view' | 'map';
 }
 
 export function usePointForm(options: UsePointFormOptions = {}) {
@@ -27,8 +27,8 @@ export function usePointForm(options: UsePointFormOptions = {}) {
   const form = ref({
     title: '',
     address: '',
-    lat: MAP_CONFIG.DEFAULT_CENTER[0].toString(),
-    lng: MAP_CONFIG.DEFAULT_CENTER[1].toString(),
+    lat: '',
+    lng: '',
     comment: '',
     images: [] as string[],
   });
@@ -88,6 +88,7 @@ export function usePointForm(options: UsePointFormOptions = {}) {
     }
     
     if (success) {
+      // Small delay to allow the user to see the success state (optional but gives a better feel)
       router.push('/points');
     }
   };
@@ -98,7 +99,7 @@ export function usePointForm(options: UsePointFormOptions = {}) {
 
   return {
     form,
-    isLoading: pointStore.isLoading,
+    isLoading: computed(() => pointStore.isLoading || false),
     errors,
     onSave,
     onCancel,

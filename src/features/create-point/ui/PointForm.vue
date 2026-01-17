@@ -8,8 +8,6 @@ import { usePointForm } from '../model/usePointForm';
 import MapPickerModal from './MapPickerModal.vue';
 import PointMap from './PointMap.vue';
 import { ref, onMounted, computed } from 'vue';
-import { usePointStore } from '@/entities/Point';
-import { MAP_CONFIG } from '@/shared/config/map';
 import EntityFormLayout from '@/shared/ui/layouts/EntityFormLayout.vue';
 
 interface Props {
@@ -22,7 +20,6 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const { form, isLoading, errors, onSave, onCancel } = usePointForm({ id: props.id, mode: props.mode });
-const pointStore = usePointStore();
 const isMapModalOpen = ref(false);
 
 const isReadOnly = computed(() => props.mode === 'view');
@@ -76,11 +73,11 @@ onMounted(() => {
     :loading="isLoading"
   >
     <!-- Form Content -->
-    <div v-if="mode !== 'map'" class="space-y-8">
+    <div v-if="props.mode !== 'map'" class="space-y-8">
       <!-- Main Inputs Grid -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <AppInput
-          v-model="form.value.title"
+          v-model="form.title"
           label="Названия *"
           placeholder="Введите название"
           :error="errors.title"
@@ -109,7 +106,7 @@ onMounted(() => {
         </AppInput>
 
         <AppInput
-          v-model="form.value.address"
+          v-model="form.address"
           label="Адрес *"
           placeholder="Введите адрес"
           :error="errors.address"
@@ -121,19 +118,24 @@ onMounted(() => {
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <div class="lg:col-span-8 flex flex-col gap-1 h-[150px]">
           <label class="text-[16px] font-bold text-[#1B3E69]">Фото</label>
+          <div v-if="isReadOnly && (!form.images || form.images.length === 0)" 
+               class="flex-1 bg-white border border-[#C6D6E8] rounded-[10px] flex items-center justify-center text-[#8DA2C0] text-[14px] font-medium italic">
+            Нет доступных фотографий
+          </div>
           <AppFileUpload 
+            v-else
             class="flex-1" 
             :disabled="isReadOnly" 
-            :existing-files="form.value.images"
+            :existing-files="form.images"
             :max-files="10"
             accept="image/*"
-            @update:data-urls="(urls) => form.value.images = urls"
+            @update:data-urls="(urls) => form.images = urls"
           />
         </div>
         <div class="lg:col-span-4 flex flex-col gap-1 h-[150px]">
           <label class="text-[16px] font-bold text-[#1B3E69]">Комментария</label>
           <AppTextarea
-            v-model="form.value.comment"
+            v-model="form.comment"
             placeholder="Напишите что-нибудь..."
             class="flex-1"
             :disabled="isReadOnly"
@@ -144,14 +146,14 @@ onMounted(() => {
       <!-- Actions -->
       <FormActions 
         :is-loading="isLoading" 
-        @save="onSave" 
+        @save="() => onSave()" 
         @cancel="onCancel" 
         :hide-save="isReadOnly"
       />
     </div>
 
     <!-- Map View -->
-    <div v-if="mode === 'map'" class="h-[calc(100vh-200px)] w-full rounded-[10px] overflow-hidden relative border border-[#C6D6E8]">
+    <div v-if="props.mode === 'map'" class="h-[calc(100vh-200px)] w-full rounded-[10px] overflow-hidden relative border border-[#C6D6E8]">
       <div class="absolute top-4 left-4 z-[1000]">
          <button 
           @click="onCancel"
@@ -162,8 +164,8 @@ onMounted(() => {
         </button>
       </div>
       <PointMap
-        :lat="form.value.lat"
-        :lng="form.value.lng"
+        :lat="form.lat"
+        :lng="form.lng"
         :readonly="true"
       />
     </div>
@@ -171,8 +173,8 @@ onMounted(() => {
     <!-- Map Modal for Picker -->
     <MapPickerModal
       :show="isMapModalOpen"
-      :initial-lat="form.value.lat"
-      :initial-lng="form.value.lng"
+      :initial-lat="form.lat"
+      :initial-lng="form.lng"
       @close="isMapModalOpen = false"
       @select="handleCoordsSelect"
       :readonly="false" 

@@ -32,7 +32,12 @@ const updateMapFromProps = () => {
   }
 };
 
-onMounted(updateMapFromProps);
+onMounted(() => {
+  updateMapFromProps();
+  // Emit initial coordinates so parent can select them without user interaction
+  emit('update:coords', { lat: markerPos.value[0], lng: markerPos.value[1] });
+});
+
 watch(() => [props.lat, props.lng], updateMapFromProps);
 
 const onMapClick = (event: any) => {

@@ -99,8 +99,6 @@ export const useShiftStore = defineStore('shift', {
         this.totalItems = 60; // Simulated total for pagination as per image
 
         // Pagination
-        const start = (this.filters.page - 1) * this.filters.limit;
-        const end = start + this.filters.limit;
         this.items = filtered.slice(0, this.filters.limit); // Use mock data
         
         // Ensure we have enough mock data if page is 1

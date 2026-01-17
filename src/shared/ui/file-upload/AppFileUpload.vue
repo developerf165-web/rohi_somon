@@ -31,13 +31,29 @@ const previews = ref<string[]>([]);
 const existingPreviews = ref<string[]>([]);
 const fileInput = ref<HTMLInputElement | null>(null);
 
-// Initialize existing files
+const allPreviews = computed(() => {
+  // To prevent duplication, we only show local previews if they aren't already in existingFiles
+  // But since comparisons of large strings/dataURLs is slow, we use a simpler approach:
+  // If the component is being used in a fully-controlled way where parent state includes everything,
+  // the parent should pass back everything in existingFiles.
+  return [...existingPreviews.value, ...previews.value];
+});
+const hasFiles = computed(() => allPreviews.value.length > 0);
+
+// Watch for prop changes to clear local buffer if they are already integrated
 watch(() => props.existingFiles, (newFiles) => {
   existingPreviews.value = [...newFiles];
+  
+  // If we have local previews and the parent state now includes them, we can clear local state.
+  // We check if the total count in existingFiles matches what we previously had in allPreviews.
+  // This is a common pattern to avoid flicker and duplication.
+  if (previews.value.length > 0 && newFiles.length >= previews.value.length) {
+    // Clear local state if parent has "taken over" the items
+    // This is safe because existingPreviews now has them.
+    previews.value = [];
+    files.value = [];
+  }
 }, { immediate: true, deep: true });
-
-const allPreviews = computed(() => [...existingPreviews.value, ...previews.value]);
-const hasFiles = computed(() => allPreviews.value.length > 0);
 
 const displayPlaceholder = computed(() => {
   if (props.placeholder) return props.placeholder;
@@ -77,8 +93,10 @@ const onFileChange = (event: Event) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
-        previews.value.push(result);
-        emit('update:dataUrls', allPreviews.value);
+        if (!previews.value.includes(result)) {
+          previews.value.push(result);
+          emit('update:dataUrls', allPreviews.value);
+        }
       };
       reader.readAsDataURL(file);
     } else {
