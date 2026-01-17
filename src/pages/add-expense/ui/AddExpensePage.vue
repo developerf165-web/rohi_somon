@@ -6,7 +6,9 @@ interface Props {
   mode?: 'add' | 'edit' | 'view';
 }
 
-defineProps<Props>();
+withDefaults(defineProps<Props>(), {
+  mode: 'add',
+});
 </script>
 
 <template>
